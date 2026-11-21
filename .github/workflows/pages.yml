@@ -15,7 +15,20 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      pages_mode: ${{ steps.detect.outputs.build_type }}
     steps:
+      - name: Pages kaynağını algıla (workflow | legacy)
+        id: detect
+        run: |
+          set +e
+          BT=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${{ github.repository }}/pages" \
+              | python3 -c "import json,sys;print(json.load(sys.stdin).get('build_type','none'))" 2>/dev/null)
+          echo "Pages build_type = ${BT:-none}"
+          echo "build_type=${BT:-none}" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
@@ -74,24 +87,15 @@ jobs:
   # docs/YAYIN.md içindeki tek adımlık ayar kullanılabilir.
   deploy:
     needs: build
+    # Yalnızca Pages kaynağı "GitHub Actions" iken yayınla.
+    # Kaynak "gh-pages" dalı ise GitHub'ın kendi yayın işi devrede.
+    if: needs.build.outputs.pages_mode == 'workflow'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      # Pages kaynağını oku: "workflow" ise Actions ile yayınla,
-      # "legacy" (gh-pages dalı) ise GitHub'ın kendi yayın işi devrede — atla.
-      - id: detect
-        run: |
-          set +e
-          BT=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github+json" \
-                "https://api.github.com/repos/${{ github.repository }}/pages" | python3 -c "import json,sys;print(json.load(sys.stdin).get('build_type','none'))" 2>/dev/null)
-          echo "build_type=${BT:-none}"
-          echo "build_type=${BT:-none}" >> "$GITHUB_OUTPUT"
       - id: pages
-        if: steps.detect.outputs.build_type == 'workflow'
         uses: actions/configure-pages@v5
       - id: deployment
-        if: steps.detect.outputs.build_type == 'workflow'
         uses: actions/deploy-pages@v4

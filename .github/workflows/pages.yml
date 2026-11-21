@@ -32,6 +32,10 @@ jobs:
         working-directory: frontend
         run: npx tsc --noEmit
 
+      - name: Çevrimdışı motor duman testi (motor + 10 sayfa)
+        working-directory: frontend
+        run: node offline-render.mjs
+
       - name: Statik derleme (çevrimdışı motor)
         working-directory: frontend
         run: npx vite build --mode ghpages

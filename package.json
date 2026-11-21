@@ -11,6 +11,9 @@
     "start": "bash scripts/start.sh",
     "typecheck": "npm --prefix frontend exec tsc -- --noEmit",
     "test": "python3 -m pytest backend/tests -q",
+    "test:offline": "node frontend/offline-render.mjs",
+    "apk": "bash scripts/build-apk.sh",
+    "apk:release": "bash scripts/build-apk.sh release",
     "docker:build": "docker build -t tugrul-download .",
     "docker:run": "docker run --rm -p 8000:8000 -v \"$PWD/downloads:/app/downloads\" tugrul-download"
   }

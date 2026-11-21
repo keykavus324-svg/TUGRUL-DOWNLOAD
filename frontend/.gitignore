@@ -3,3 +3,4 @@ dist/
 *.local
 .vite/
 offline-test.mjs
+.app-render.mjs

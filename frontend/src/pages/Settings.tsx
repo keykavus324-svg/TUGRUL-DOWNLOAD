@@ -18,7 +18,8 @@ import {
   Wrench,
 } from "lucide-react";
 import Modal, { Field, Toggle } from "../components/Modal";
-import { api, bytes, put } from "../lib";
+import { api, bytes } from "../lib";
+import { inAndroidShell, serverBase, setServerBase } from "../engine";
 import { useApp } from "../store";
 
 const SECTIONS = [
@@ -115,6 +116,28 @@ export default function SettingsPage() {
                   </div>
                 </div>
               </Field>
+              {inAndroidShell() && (
+                <div className="rounded-xl border border-teal-400/25 bg-teal-400/[0.05] p-3">
+                  <p className="text-[12px] font-semibold text-teal-200">Bağlı sunucu (gerçek yt-dlp motoru)</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-teal-200/70">
+                    Boş bırakılırsa uygulama çevrimdışı demo motoruyla çalışır. Bilgisayarınızda
+                    <code className="mx-1 rounded bg-black/30 px-1">bash scripts/start.sh</code>
+                    çalıştırıp adresi buraya yazın (ör. http://192.168.1.20:8000).
+                  </p>
+                  <input
+                    defaultValue={serverBase()}
+                    placeholder="http://192.168.1.20:8000"
+                    onChange={(e) => setServerBase(e.target.value)}
+                    className="input mt-2 font-mono !text-[12px]"
+                  />
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="btn-outline mt-2 !py-1.5 !text-[11.5px]"
+                  >
+                    Bağlan ve yeniden yükle
+                  </button>
+                </div>
+              )}
               <Toggle
                 checked={draft.incognito === "true"}
                 onChange={(v) => setDraft({ ...draft, incognito: String(v) })}

@@ -17,6 +17,7 @@ import {
   Terminal,
 } from "lucide-react";
 import { useApp } from "../store";
+import { isOffline } from "../engine";
 import QuickBar from "./QuickBar";
 
 export const NAV = [
@@ -150,10 +151,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               <Menu className="h-4 w-4" />
             </button>
-            <div className="hidden items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 sm:flex">
-              <Sparkles className="h-3.5 w-3.5 text-gold-400" />
-              <span className="text-[11px] font-medium text-zinc-300">AAA Stüdyo</span>
-            </div>
+            {isOffline() ? (
+              <div className="flex items-center gap-2 rounded-full border border-amber-400/25 bg-amber-400/[0.08] px-3 py-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+                <span className="text-[11px] font-medium text-amber-200">Demo modu</span>
+              </div>
+            ) : (
+              <div className="hidden items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 sm:flex">
+                <Sparkles className="h-3.5 w-3.5 text-gold-400" />
+                <span className="text-[11px] font-medium text-zinc-300">AAA Stüdyo</span>
+              </div>
+            )}
             <NavLink
               to="/settings"
               className="grid h-9 w-9 place-items-center rounded-full border border-white/[0.08] bg-white/[0.03] text-zinc-400 transition hover:text-white"

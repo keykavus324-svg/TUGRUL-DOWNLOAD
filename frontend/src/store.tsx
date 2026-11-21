@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { api } from "./lib";
+import { engineMode } from "./engine";
 import type { Download, Health, Settings, Stats } from "./types";
 
 type Toast = { id: number; kind: "ok" | "err" | "info"; title: string; body?: string };
@@ -51,8 +52,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setDownloads(data.items);
       setStats(await api<Stats>("/api/stats"));
       setConnected(true);
-    } catch {
+    } catch (e) {
       setConnected(false);
+      // Çevrimdışı moda düş: sunucu yoksa istemci motoru devralır
+      if (engineMode === "server") {
+        try {
+          const mod = await import("./offline");
+          mod.installOfflineApi();
+          mod.startOfflineScheduler();
+          (window as unknown as { __TUGRUL_OFFLINE__: boolean }).__TUGRUL_OFFLINE__ = true;
+          const data = await api<{ items: Download[] }>("/api/downloads?limit=300");
+          setDownloads(data.items);
+          setStats(await api<Stats>("/api/stats"));
+          setConnected(true);
+        } catch {
+          /* hâlâ yok */
+        }
+      }
     }
   }, []);
 

@@ -1,0 +1,68 @@
+name: Sürüm paketleri
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  web:
+    name: Web (sunucu paketi)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Arayüz derle
+        working-directory: frontend
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+      - name: Arşivle
+        run: |
+          tar --exclude='./frontend/node_modules' --exclude='./.git' --exclude='./downloads/*' \
+              --exclude='./data/*.db*' -czf tugrul-download-web.tar.gz \
+              backend frontend/dist frontend/package.json frontend/public scripts README.md LICENSE NOTICE.md
+          ls -lh tugrul-download-web.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tugrul-download-web
+          path: tugrul-download-web.tar.gz
+
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: android-actions/setup-android@v3
+      - name: Derle + APK üret
+        run: |
+          chmod +x scripts/build-apk.sh
+          bash scripts/build-apk.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tugrul-download-apk
+          path: dist-apk/*.apk
+      - name: Release'e ekle
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist-apk/*.apk
+            tugrul-download-web.tar.gz
+          generate_release_notes: true

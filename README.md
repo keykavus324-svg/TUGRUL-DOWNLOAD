@@ -7,11 +7,23 @@
 **yt-dlp motoruyla çalışan, AAA kalitede video & ses indirme stüdyosu.**
 Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, arşivle.
 
-`yt-dlp` · `FastAPI` · `React 18` · `TypeScript` · `Tailwind` · `FFmpeg` · `SQLite`
+`yt-dlp` · `FastAPI` · `React 18` · `TypeScript` · `Tailwind` · `FFmpeg` · `SQLite` · `Capacitor`
+
+[![Web Demo](https://img.shields.io/badge/▶_Canlı_Demo-GitHub_Pages-f7c948?style=for-the-badge)](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)
+[![APK](https://img.shields.io/badge/⬇_Android_APK-İndir-3ddc84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)
+
+**[Web demosu](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)** (sunucusuz motor, kurulum yok) ·
+**[Android APK](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** ·
+**[Tam sürüm](#hızlı-başlangıç)** (gerçek yt-dlp indirmeleri)
 
 </div>
 
 ---
+
+> **İki çalışma modu.** Statik sürüm (Pages/APK) cihaz içi motorla kuyruk, kalıcılık ve
+> demo medya üretimini çalıştırır — arayüzün tamamı canlıdır. Gerçek sitelerden indirme,
+> FFmpeg stüdyosu ve toplu işler için Python sunucusunu çalıştırın: `bash scripts/start.sh`.
+
 
 ## Neden TUĞRUL?
 
@@ -52,6 +64,27 @@ bash scripts/start.sh
 ```
 
 `start.sh` eksik Python/Node bağımlılıklarını kurar, arayüzü derler ve sunucuyu başlatır.
+
+### Android APK
+
+```bash
+export ANDROID_HOME=$HOME/Android/Sdk
+bash scripts/build-apk.sh            # → dist-apk/tugrul-download-1.0.0-debug.apk
+```
+
+Hazır APK: **[Releases](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)**.
+Ayrıntılar ve iki çalışma modu: [docs/ANDROID.md](docs/ANDROID.md).
+
+### Statik yayın (GitHub Pages)
+
+`main` dalına her push'ta `.github/workflows/pages.yml` arayüzü `--mode ghpages`
+(çevrimdışı motor) ile derler ve Pages'e yayınlar:
+<https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/>
+
+```bash
+# yerelde aynı çıktıyı görmek için
+npm --prefix frontend run build:ghpages && npx --prefix frontend vite preview --mode ghpages
+```
 
 ### Docker
 
@@ -103,7 +136,7 @@ npm --prefix frontend run dev                   # Vite :5173 (proxy'li)
   yarım kalan işler otomatik kuyruğa döner.
 * **Arayüz**: `EventSource` ile canlı ilerleme; sayfa yenilemeye gerek yok.
 
-Ayrıntılar: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · API: [docs/API.md](docs/API.md)
+Ayrıntılar: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [API](docs/API.md) · [Android](docs/ANDROID.md)
 
 ---
 
@@ -141,6 +174,17 @@ seçenekleri, altyazı dilleri, SponsorBlock, hız sınırı, proxy, çerez, tem
 yedek al/geri yükle.
 
 ---
+
+## Çevrimdışı motor (Pages / APK)
+
+`frontend/src/offline.ts`, `/api/*` çağrılarını yakalayan bir _sanal sunucudur_:
+kuyruk, ilerleme, duraklat/devam, kalıcılık (IndexedDB), ayarlar, şablonlar,
+zamanlama, izleme listesi, yedekleme ve demo medya üretimi tarayıcıda çalışır.
+Böylece GitHub Pages ve APK aynı arayüzü, aynı kod yoluyla sunar; sunucu
+bulunduğunda ise istekler gerçek API'ye gider.
+
+APK'da **Ayarlar → Bağlı sunucu** alanına `http://<bilgisayar-ip>:8000` yazarsanız
+telefon, kendi ağınızdaki gerçek yt-dlp motoruna bağlanır.
 
 ## Demo modu (ağ kısıtlı ortamlar)
 

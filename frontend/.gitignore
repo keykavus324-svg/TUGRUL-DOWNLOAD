@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.local
+.vite/
+offline-test.mjs

@@ -19,6 +19,27 @@ export default function QuickBar() {
     localStorage.setItem("tugrul.quickmode", mode);
   }, [mode]);
 
+  // Android paylaşımından / önceki oturumdan gelen bağlantı
+  useEffect(() => {
+    const push = (text?: string | null) => {
+      if (!text) return;
+      setValue(text.trim());
+      try {
+        localStorage.removeItem("tugrul.pendingShare");
+      } catch {
+        /* yut */
+      }
+    };
+    try {
+      push(localStorage.getItem("tugrul.pendingShare"));
+    } catch {
+      /* yut */
+    }
+    const onShare = (e: Event) => push((e as CustomEvent<string>).detail);
+    window.addEventListener("tugrul:share", onShare);
+    return () => window.removeEventListener("tugrul:share", onShare);
+  }, []);
+
   async function go() {
     const url = value.trim();
     if (!url) return;

@@ -48,6 +48,7 @@ jobs:
           ls -la frontend/dist
 
       - uses: actions/configure-pages@v5
+        continue-on-error: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/dist

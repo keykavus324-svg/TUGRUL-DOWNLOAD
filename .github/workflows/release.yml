@@ -12,8 +12,6 @@ jobs:
   web:
     name: Web (sunucu paketi)
     runs-on: ubuntu-latest
-    outputs:
-      tarball: ${{ steps.pack.outputs.path }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -27,13 +25,11 @@ jobs:
           npm ci --no-audit --no-fund
           npm run build
       - name: Arşivle
-        id: pack
         run: |
           tar --exclude='./frontend/node_modules' --exclude='./.git' --exclude='./downloads/*' \
               --exclude='./data/*.db*' -czf tugrul-download-web.tar.gz \
               backend frontend/dist frontend/package.json frontend/public scripts README.md LICENSE NOTICE.md
           ls -lh tugrul-download-web.tar.gz
-          echo "path=$PWD/tugrul-download-web.tar.gz" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with:
           name: tugrul-download-web
@@ -80,6 +76,11 @@ jobs:
           name: gradle-log
           path: dist-apk/*.log
           if-no-files-found: ignore
+      - name: Web paketini indir (release'e eklemek için)
+        uses: actions/download-artifact@v4
+        with:
+          name: tugrul-download-web
+          path: release-assets
       - name: Release notlarını hazırla
         run: |
           VER=$(node -p "require('./package.json').version")
@@ -118,7 +119,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          name: "TUĞRUL DOWNLOAD ${{ github.ref_name }}"
           files: |
             dist-apk/*.apk
-            ${{ needs.web.outputs.tarball }}
+            release-assets/*.tar.gz
           body_path: /tmp/release-notes.md

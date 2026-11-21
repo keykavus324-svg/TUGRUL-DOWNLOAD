@@ -1,0 +1,32 @@
+# bağımlılıklar
+node_modules/
+.pnpm-store/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# derleme çıktıları
+frontend/dist/
+dist/
+build/
+*.egg-info/
+
+# çalışma verisi
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/cache/
+data/demo/
+downloads/
+*.part
+*.ytdl
+cookies.txt
+
+# editör / işletim sistemi
+.DS_Store
+.idea/
+.vscode/
+*.log
+.pytest_cache/
+.env

@@ -82,6 +82,10 @@ jobs:
       - id: pages
         uses: actions/configure-pages@v5
         continue-on-error: true
+      # Source = "GitHub Actions" ise doğrudan yayınlar.
+      # Source = "Deploy from a branch" (gh-pages) ise bu adım atlanır/uyarı verir;
+      # yayını GitHub'ın kendi "pages build and deployment" işi yapar.
       - id: deployment
         if: steps.pages.outcome == 'success'
+        continue-on-error: true
         uses: actions/deploy-pages@v4

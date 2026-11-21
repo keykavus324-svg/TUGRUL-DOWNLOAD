@@ -35,6 +35,10 @@ npm --prefix frontend run build:ghpages
 echo "→ Capacitor senkronize ediliyor…"
 ( cd frontend && npx cap sync android )
 
+# 2a) kaynak çakışmalarını temizle (yinelenen drawable/renk tanımları derlemeyi bozar)
+rm -f frontend/android/app/src/main/res/drawable/splash.xml
+rm -f frontend/android/app/src/main/res/values/ic_launcher_background.xml
+
 # 2b) sürüm bilgisini Gradle'a yansıt
 VERSION_CODE="${VERSION_CODE:-$(date +%y%m%d)}"
 sed -i.bak -E "s/versionCode [0-9]+/versionCode ${VERSION_CODE}/; s/versionName \"[^\"]+\"/versionName \"${VERSION}\"/" \

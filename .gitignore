@@ -41,3 +41,6 @@ frontend/android/app/src/main/assets/public/
 frontend/android/app/src/main/assets/capacitor.config.json
 frontend/android/app/src/main/assets/capacitor.plugins.json
 frontend/android/app/src/main/assets/capacitor-cordova-android-plugins/
+
+# Çalışma zamanı
+data/*.db*

@@ -10,6 +10,8 @@ Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, ar
 `yt-dlp` · `FastAPI` · `React 18` · `TypeScript` · `Tailwind` · `FFmpeg` · `SQLite` · `Capacitor`
 
 [![Web Demo](https://img.shields.io/badge/▶_Canlı_Demo-GitHub_Pages-f7c948?style=for-the-badge)](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)
+![Pages](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/actions/workflows/pages.yml/badge.svg)
+![Sürüm](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/actions/workflows/release.yml/badge.svg)
 [![APK](https://img.shields.io/badge/⬇_Android_APK-İndir-3ddc84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)
 
 **[Web demosu](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)** (sunucusuz motor, kurulum yok) ·
@@ -20,6 +22,10 @@ Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, ar
 
 ---
 
+> **Yayın durumu.** Statik demo `https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/`
+> adresinde yayında (kaynak: `gh-pages` dalı, HTTPS zorunlu). APK ve sunucu paketi
+> **[Releases](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** sayfasında.
+>
 > **İki çalışma modu.** Statik sürüm (Pages/APK) cihaz içi motorla kuyruk, kalıcılık ve
 > demo medya üretimini çalıştırır — arayüzün tamamı canlıdır. Gerçek sitelerden indirme,
 > FFmpeg stüdyosu ve toplu işler için Python sunucusunu çalıştırın: `bash scripts/start.sh`.

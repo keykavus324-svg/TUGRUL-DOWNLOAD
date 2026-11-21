@@ -1,0 +1,43 @@
+# bağımlılıklar
+node_modules/
+.pnpm-store/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# derleme çıktıları
+frontend/dist/
+dist/
+build/
+*.egg-info/
+
+# çalışma verisi
+data/*.db
+data/*.db-shm
+data/*.db-wal
+data/cache/
+data/demo/
+downloads/
+*.part
+*.ytdl
+cookies.txt
+
+# editör / işletim sistemi
+.DS_Store
+.idea/
+.vscode/
+*.log
+.pytest_cache/
+.env
+
+# Android derleme çıktıları
+dist-apk/
+frontend/android/app/build/
+frontend/android/build/
+frontend/android/.gradle/
+frontend/android/local.properties
+frontend/android/app/src/main/assets/public/
+frontend/android/app/src/main/assets/capacitor.config.json
+frontend/android/app/src/main/assets/capacitor.plugins.json
+frontend/android/app/src/main/assets/capacitor-cordova-android-plugins/

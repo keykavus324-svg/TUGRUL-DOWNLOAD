@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TUĞRUL DOWNLOAD</string>
+    <string name="title_activity_main">TUĞRUL DOWNLOAD</string>
+    <string name="package_name">com.tugrul.studio</string>
+    <string name="custom_url_scheme">com.tugrul.studio</string>
+</resources>

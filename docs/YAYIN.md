@@ -8,16 +8,23 @@ Canlı adres (açıldıktan sonra):
 
 ### Tek adımlık ayar (gerekli — yalnızca bir kez)
 
-Pages **bir kez** etkinleştirilmelidir; bunu depo sahibi yapabilir:
+Pages **bir kez** etkinleştirilmelidir; bunu yalnızca depo sahibi yapabilir
+(uygulama token'ı bu ayarı değiştiremez, GitHub 403 döner):
 
-**Settings → Pages → Build and deployment**
+**Settings → Pages → Build and deployment → Source**
 
-| Alan | Değer |
-|---|---|
-| Source | **GitHub Actions** |
+İki seçenek de hazır — hangisini seçerseniz çalışır:
+
+| Seçenek | Kaynak | Not |
+|---|---|---|
+| **A (önerilen)** | **GitHub Actions** | `main`'e her push'ta otomatik derlenir ve yayınlanır |
+| **B** | **Deploy from a branch → `gh-pages` / (root)** | `gh-pages` dalı **şu anda hazır** (derlenmiş site mevcut); seçtiğiniz an yayına girer |
 
 Kaydettikten sonra: **Actions → “GitHub Pages (statik demo)” → Re-run all jobs**
 (veya `main` dalına yeni bir commit). İlk yayın ~1 dakika sürer.
+
+> `gh-pages` dalı hem hazır olarak push edildi hem de workflow tarafından her
+> derlemede güncelleniyor (`continue-on-error`), yani iki yöntem birbirini bozmaz.
 
 CLI ile yapmak isterseniz (kişisel token gerekir):
 

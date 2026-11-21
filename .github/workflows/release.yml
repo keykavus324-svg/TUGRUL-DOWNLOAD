@@ -49,11 +49,33 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
-      - uses: android-actions/setup-android@v3
+      - name: Android SDK hazırla
+        run: |
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          if [ ! -d "$SDK" ]; then
+            SDK="$RUNNER_TEMP/android-sdk"
+            mkdir -p "$SDK/cmdline-tools"
+            curl -fsSL -o /tmp/tools.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q /tmp/tools.zip -d "$SDK/cmdline-tools"
+            mv "$SDK/cmdline-tools/cmdline-tools" "$SDK/cmdline-tools/latest"
+          fi
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          "$SDK/cmdline-tools/latest/bin/sdkmanager" "platform-tools" "platforms;android-34" "build-tools;34.0.0" > /dev/null
+          echo "SDK hazır: $SDK"
       - name: Derle + APK üret
         run: |
           chmod +x scripts/build-apk.sh
           bash scripts/build-apk.sh
+      - name: APK'yı etiketsiz de yayınla
+        if: startsWith(github.ref, 'refs/tags/') != true
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}-build
+          name: "Geliştirme derlemesi #${{ github.run_number }}"
+          files: dist-apk/*.apk
+          prerelease: true
       - uses: actions/upload-artifact@v4
         with:
           name: tugrul-download-apk

@@ -79,13 +79,19 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Pages kaynağını oku: "workflow" ise Actions ile yayınla,
+      # "legacy" (gh-pages dalı) ise GitHub'ın kendi yayın işi devrede — atla.
+      - id: detect
+        run: |
+          set +e
+          BT=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${{ github.repository }}/pages" | python3 -c "import json,sys;print(json.load(sys.stdin).get('build_type','none'))" 2>/dev/null)
+          echo "build_type=${BT:-none}"
+          echo "build_type=${BT:-none}" >> "$GITHUB_OUTPUT"
       - id: pages
+        if: steps.detect.outputs.build_type == 'workflow'
         uses: actions/configure-pages@v5
-        continue-on-error: true
-      # Source = "GitHub Actions" ise doğrudan yayınlar.
-      # Source = "Deploy from a branch" (gh-pages) ise bu adım atlanır/uyarı verir;
-      # yayını GitHub'ın kendi "pages build and deployment" işi yapar.
       - id: deployment
-        if: steps.pages.outcome == 'success'
-        continue-on-error: true
+        if: steps.detect.outputs.build_type == 'workflow'
         uses: actions/deploy-pages@v4

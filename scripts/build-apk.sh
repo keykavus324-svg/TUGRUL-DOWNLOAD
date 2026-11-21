@@ -32,6 +32,12 @@ npm --prefix frontend run build:ghpages
 echo "→ Capacitor senkronize ediliyor…"
 ( cd frontend && npx cap sync android )
 
+# 2b) sürüm bilgisini Gradle'a yansıt
+VERSION_CODE="${VERSION_CODE:-$(date +%y%m%d)}"
+sed -i.bak -E "s/versionCode [0-9]+/versionCode ${VERSION_CODE}/; s/versionName \"[^\"]+\"/versionName \"${VERSION}\"/" \
+  frontend/android/app/build.gradle
+rm -f frontend/android/app/build.gradle.bak
+
 # 3) Gradle
 cd frontend/android
 if [ "$MODE" = "release" ] && [ ! -f keystore.properties ]; then
@@ -41,7 +47,19 @@ if [ "$MODE" = "release" ] && [ ! -f keystore.properties ]; then
 fi
 TASK=$([ "$MODE" = "release" ] && echo assembleRelease || echo assembleDebug)
 echo "→ Gradle: $TASK"
-if [ -x ./gradlew ]; then ./gradlew --no-daemon "$TASK"; else gradle --no-daemon "$TASK"; fi
+GRADLE_LOG="$ROOT/dist-apk/gradle-$MODE.log"
+mkdir -p "$ROOT/dist-apk"
+if [ -x ./gradlew ]; then
+  ./gradlew --no-daemon --stacktrace "$TASK" 2>&1 | tee "$GRADLE_LOG" || true
+else
+  gradle --no-daemon --stacktrace "$TASK" 2>&1 | tee "$GRADLE_LOG" || true
+fi
+if ! grep -qE "BUILD SUCCESSFUL" "$GRADLE_LOG"; then
+  echo "✖ Derleme başarısız. Son 60 satır:" >&2
+  tail -60 "$GRADLE_LOG" >&2
+  echo "  (tam günlük: dist-apk/gradle-$MODE.log)" >&2
+  exit 1
+fi
 
 OUT="$ROOT/dist-apk"
 mkdir -p "$OUT"

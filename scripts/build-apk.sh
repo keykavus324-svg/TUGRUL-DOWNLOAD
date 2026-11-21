@@ -22,6 +22,9 @@ if [ -z "${ANDROID_HOME:-}${ANDROID_SDK_ROOT:-}" ]; then
 fi
 export ANDROID_HOME="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
 export ANDROID_SDK_ROOT="$ANDROID_HOME"
+printf 'sdk.dir=%s\n' "$ANDROID_HOME" > frontend/android/local.properties
+echo "→ Android SDK: $ANDROID_HOME"
+ls "$ANDROID_HOME/platforms" 2>/dev/null | tail -3 || true
 
 # 1) arayüzü statik (çevrimdışı) modda derle
 echo "→ Arayüz derleniyor (statik motor)…"
@@ -49,8 +52,9 @@ TASK=$([ "$MODE" = "release" ] && echo assembleRelease || echo assembleDebug)
 echo "→ Gradle: $TASK"
 GRADLE_LOG="$ROOT/dist-apk/gradle-$MODE.log"
 mkdir -p "$ROOT/dist-apk"
-if [ -x ./gradlew ]; then
-  ./gradlew --no-daemon --stacktrace "$TASK" 2>&1 | tee "$GRADLE_LOG" || true
+chmod +x ./gradlew 2>/dev/null || true
+if [ -f ./gradlew ]; then
+  bash ./gradlew --no-daemon --stacktrace "$TASK" 2>&1 | tee "$GRADLE_LOG" || true
 else
   gradle --no-daemon --stacktrace "$TASK" 2>&1 | tee "$GRADLE_LOG" || true
 fi
@@ -58,6 +62,11 @@ if ! grep -qE "BUILD SUCCESSFUL" "$GRADLE_LOG"; then
   echo "✖ Derleme başarısız. Son 60 satır:" >&2
   tail -60 "$GRADLE_LOG" >&2
   echo "  (tam günlük: dist-apk/gradle-$MODE.log)" >&2
+  # GitHub Actions: hatayı annotation olarak yayınla (log indirilemese de görünür)
+  if [ -n "${GITHUB_ACTIONS:-}" ]; then
+    SNIP=$(grep -E "FAILURE|error:|Error|Caused by|> " "$GRADLE_LOG" | tail -25 | tr '\n' '|' | cut -c1-3500)
+    echo "::error title=Gradle hatası::$SNIP"
+  fi
   exit 1
 fi
 

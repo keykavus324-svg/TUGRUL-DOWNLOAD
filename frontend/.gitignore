@@ -4,3 +4,5 @@ dist/
 .vite/
 offline-test.mjs
 .app-render.mjs
+.off.mjs
+.app2.mjs

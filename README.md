@@ -13,8 +13,8 @@ Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, ar
 [![APK](https://img.shields.io/badge/⬇_Android_APK-İndir-3ddc84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)
 
 **[Web demosu](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)** (sunucusuz motor, kurulum yok) ·
-**[Android APK](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** ·
-**[Tam sürüm](#hızlı-başlangıç)** (gerçek yt-dlp indirmeleri)
+**[Android APK v1.0.0](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/download/v1.0.0/tugrul-download-1.0.0-debug.apk)** (5,4 MB) ·
+**[Tam sürüm paketi](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/download/v1.0.0/tugrul-download-web.tar.gz)** (gerçek yt-dlp indirmeleri)
 
 </div>
 

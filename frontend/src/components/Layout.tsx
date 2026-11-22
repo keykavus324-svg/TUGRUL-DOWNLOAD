@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useApp } from "../store";
 import { isOffline } from "../engine";
+import { nativeAvailable } from "../offline";
 import QuickBar from "./QuickBar";
 
 export const NAV = [
@@ -58,6 +59,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { health, connected, stats } = useApp();
   const loc = useLocation();
   const [sheet, setSheet] = useState(false);
+  // APK'da yt-dlp telefonun içinde çalışır → rozet bunu söyler
+  const [onDevice, setOnDevice] = useState(false);
+
+  useEffect(() => {
+    let live = true;
+    nativeAvailable()
+      .then((v) => {
+        if (live) setOnDevice(v);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
 
   useEffect(() => {
     setSheet(false);
@@ -154,7 +169,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {isOffline() ? (
               <div className="flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/[0.08] px-3 py-1.5">
                 <Sparkles className="h-3.5 w-3.5 text-teal-300" />
-                <span className="text-[11px] font-medium text-teal-200">yt-dlp · bulut motor</span>
+                <span className="text-[11px] font-medium text-teal-200">{onDevice ? "yt-dlp · cihazda" : "yt-dlp · bulut motor"}</span>
               </div>
             ) : (
               <div className="hidden items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 sm:flex">

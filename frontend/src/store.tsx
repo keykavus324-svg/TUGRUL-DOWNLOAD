@@ -139,7 +139,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           api<Stats>("/api/stats").then(setStats).catch(() => {});
           return;
         }
-        if (["started", "queued", "paused", "canceled", "failed", "processing"].includes(data.type)) {
+        if (["started", "queued", "paused", "canceled", "failed", "processing", "updated"].includes(data.type)) {
           if (data.item) {
             setDownloads((prev) => {
               const exists = prev.some((d) => d.id === data.item.id);

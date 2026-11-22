@@ -17,6 +17,8 @@ public class MainActivity extends BridgeActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // Cihaz içi yt-dlp motoru (YtdlpPlugin) WebView'e açılır
+        registerPlugin(YtdlpPlugin.class);
         super.onCreate(savedInstanceState);
         WebView web = getBridge() != null ? getBridge().getWebView() : null;
         if (web != null) {

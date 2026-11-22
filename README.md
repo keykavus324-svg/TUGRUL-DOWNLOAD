@@ -15,8 +15,8 @@ Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, ar
 [![APK](https://img.shields.io/badge/⬇_Android_APK-İndir-3ddc84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)
 
 **[Web demosu](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)** (sunucusuz motor, kurulum yok) ·
-**[Android APK v1.0.0](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/download/v1.0.0/tugrul-download-1.0.0-debug.apk)** (5,4 MB) ·
-**[Tam sürüm paketi](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/download/v1.0.0/tugrul-download-web.tar.gz)** (gerçek yt-dlp indirmeleri)
+**[Android APK](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** (yt-dlp cihazın içinde — sunucusuz) ·
+**[Tam sürüm paketi](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** (gerçek yt-dlp indirmeleri)
 
 </div>
 
@@ -26,10 +26,12 @@ Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, ar
 > adresinde yayında (kaynak: `gh-pages` dalı, HTTPS zorunlu). APK ve sunucu paketi
 > **[Releases](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** sayfasında.
 >
-> **Bağlantıyı yapıştırın, indirme başlasın.** Statik sürüm (Pages/APK) bağlantıyı
-> sunucusuz **yt-dlp proxy** ucuna (`vercel-api/`) gönderir; dosya parça parça cihaza iner
-> ve tek dokunuşla kaydedilir. Kuyruk, ilerleme, duraklat/devam ve kalıcılık cihazda çalışır.
-> FFmpeg stüdyosu ve toplu işler için tam sürümü çalıştırın: `bash scripts/start.sh`.
+> **Bağlantıyı yapıştırın, indirme başlasın.** APK'da **yt-dlp + Python + FFmpeg telefonun
+> içinde** çalışır (YTDLnis ile aynı yaklaşım: `youtubedl-android`); hiçbir sunucu gerekmez ve
+> dosya doğrudan `İndirilenler/TUGRUL DOWNLOAD` klasörüne yazılır. Statik web sürümü (Pages)
+> bağlantıyı sunucusuz **yt-dlp proxy** ucuna (`vercel-api/`) gönderir. Kuyruk, ilerleme,
+> duraklat/devam ve kalıcılık her iki tarafta da cihazda çalışır. FFmpeg stüdyosu ve toplu
+> işler için tam sürümü çalıştırın: `bash scripts/start.sh`.
 
 
 ## Neden TUĞRUL?
@@ -76,7 +78,7 @@ bash scripts/start.sh
 
 ```bash
 export ANDROID_HOME=$HOME/Android/Sdk
-bash scripts/build-apk.sh            # → dist-apk/tugrul-download-1.0.0-debug.apk
+bash scripts/build-apk.sh            # → dist-apk/tugrul-download-1.0.3-debug.apk
 ```
 
 Hazır APK: **[Releases](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)**.
@@ -184,7 +186,21 @@ yedek al/geri yükle.
 
 ## İndirme motoru (Pages / APK)
 
-İki katman birlikte çalışır:
+**APK'da motor cihazın içindedir.** `frontend/android/.../YtdlpPlugin.java`, `youtubedl-android`
+üzerinden yt-dlp + Python + FFmpeg'i telefonda çalıştırır (YTDLnis'in kullandığı kütüphane):
+
+```
+Ytdlp.init()                 Python/yt-dlp/FFmpeg'i hazırlar (ilk açılışta birkaç saniye)
+Ytdlp.info(url)              --dump-single-json → başlık, süre, formatlar
+Ytdlp.download({url, type})  indirme; ilerleme "progress" olayıyla arayüze akar
+Ytdlp.cancel(id)             çalışan süreci durdurur
+```
+
+Dosya `Download/TUGRUL DOWNLOAD` içine yazılır; sunucu, proxy veya bulut ucu gerekmez.
+Doğrulama: `node frontend/native-download-test.mjs` (dış ağ tamamen kapalıyken
+yapıştır → indir → dosya cihazda).
+
+Statik web sürümünde (Pages) ise iki katman birlikte çalışır:
 
 * **Cihaz katmanı** — `frontend/src/offline.ts`, `/api/*` çağrılarını yakalayan bir
   _sanal sunucudur_: kuyruk, ilerleme, duraklat/devam, kalıcılık (IndexedDB), ayarlar,
@@ -216,7 +232,8 @@ cd vercel-api && vercel deploy --prod          # ya da vercel-api/ klasörünü 
 > `https://<projeniz>.vercel.app/api/index/api/probe?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ`
 
 APK'da **Ayarlar → Yerel sunucu** alanına `http://<bilgisayar-ip>:8000` yazarsanız
-telefon, kendi ağınızdaki tam sürüme (FFmpeg dahil) bağlanır; boşsa proxy ucu kullanılır.
+telefon, kendi ağınızdaki tam sürüme bağlanır; boş bırakırsanız (önerilen) indirmeler
+cihazın içindeki motorla yürür.
 
 ## Demo modu (ağ kısıtlı ortamlar)
 

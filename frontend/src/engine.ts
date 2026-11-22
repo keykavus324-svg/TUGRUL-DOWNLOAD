@@ -8,7 +8,9 @@
 
 function detect(): "server" | "offline" {
   // Vite "ghpages" modunda derlendi → her zaman statik
-  if (import.meta.env.MODE === "ghpages" || import.meta.env.VITE_OFFLINE === "1") return "offline";
+  // (import.meta.env bazı derleme ortamlarında yoktur → savunmalı oku)
+  const env = (import.meta as unknown as { env?: { MODE?: string; VITE_OFFLINE?: string } }).env || {};
+  if (env.MODE === "ghpages" || env.VITE_OFFLINE === "1") return "offline";
   if (typeof window === "undefined") return "server";
 
   const w = window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } };

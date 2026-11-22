@@ -26,9 +26,10 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew assembleGithubDebug --no-daemon 2>&1 | tee gradle-output.log || {
-            while IFS= read -r line; do
-              echo "::error::${line//'%'/'%25'}"
-            done < <(tail -80 gradle-output.log)
+            details=$(tail -60 gradle-output.log)
+            details=${details//'%'/'%25'}
+            details=${details//$'\n'/'%0A'}
+            echo "::error::$details"
             exit 1
           }
       - uses: actions/upload-artifact@v4

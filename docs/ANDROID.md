@@ -6,22 +6,29 @@ paketlenmiş hâlidir: tek kod tabanı, iki dağıtım (web + APK).
 ## Hazır APK'yı indir
 
 * **Sürümler sayfası:** <https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest>
-  → `tugrul-download-1.0.0-debug.apk`
+  → `tugrul-download-1.0.1-debug.apk`
 * Ya da Actions → **Sürüm paketleri** → Artifacts → `tugrul-download-apk`
 
 Kurulum: APK'yı telefona indir → aç → “bilinmeyen kaynaklara izin ver” → kur.
 Uygulama `com.tugrul.studio` paket adıyla, kendi ikonu ve başlangıç ekranıyla gelir.
 
-## İki çalışma modu
+## Nasıl çalışıyor
 
-| Mod | Nasıl | Ne yapar |
-|---|---|---|
-| **Demo (varsayılan)** | Kur, aç | Cihaz içi motor: kuyruk, ilerleme, kalıcılık (IndexedDB), demo medya üretimi, izleme/şablon/istatistik, tüm arayüz. Ağ gerekmez. |
-| **Gerçek motor** | Ayarlar → **Bağlı sunucu** = `http://<bilgisayar-ip>:8000` | APK, aynı ağdaki TUĞRUL DOWNLOAD sunucusuna bağlanır → **gerçek yt-dlp indirmeleri**, FFmpeg stüdyosu, tüm özellikler |
+| Katman | Ne yapar |
+|---|---|
+| **Cihaz (APK içi)** | Arayüz + kuyruk, ilerleme, duraklat/devam, kalıcılık (IndexedDB), izleme/şablon/istatistik. Dosya parça parça inince **diske yazılır** (`TUGRUL DOWNLOAD` klasörü). |
+| **Motor (varsayılan)** | Sunucusuz yt-dlp ucu: `https://tugrul-run-tugrul1.vercel.app/api/index` — Ayarlar → **İndirme motoru** alanından değiştirilebilir. |
+| **Motor (yerel, tam güç)** | Ayarlar → **Yerel sunucu** = `http://<bilgisayar-ip>:8000` → aynı ağdaki TUĞRUL DOWNLOAD sunucusu: FFmpeg stüdyosu, toplu işler, oynatma listeleri. |
+
+Bağlantıyı yapıştırmanız yeterli — indirme hemen başlar.
 
 > Neden sunucu? yt-dlp + FFmpeg'i Android'de çalıştırmak ~80 MB Python/FFmpeg
 > paketi ve JNI köprüsü gerektirir. APK'yı hafif (≈5 MB) tutmak ve mağaza
-> politikalarına uygun kalmak için motor sunucuda çalışır; telefon arayüz olur.
+> politikalarına uygun kalmak için motor dışarıda çalışır; telefon arayüz olur.
+>
+> Kendi ucunuzu yayınlamak: `vercel-api/` klasörünü Vercel'e taşıyın, sonra
+> _Project Settings → Deployment Protection → "Only Preview Deployments"_
+> (aksi hâlde `*.vercel.app` adresleri Vercel girişi ister ve uygulama motora ulaşamaz).
 > Yerel (on-device) motor isteyenler için yol haritası: chaquopy + yt-dlp.
 
 ### Telefonu sunucuya bağlama (2 dakika)
@@ -41,7 +48,7 @@ Telefonda: **Ayarlar → Bağlı sunucu → `http://192.168.1.20:8000` → Bağl
 export ANDROID_HOME=$HOME/Android/Sdk
 bash scripts/build-apk.sh            # debug APK
 bash scripts/build-apk.sh release    # imzalı sürüm (keystore.properties gerekir)
-# → dist-apk/tugrul-download-1.0.0-debug.apk
+# → dist-apk/tugrul-download-1.0.1-debug.apk
 ```
 
 ### İmzalı sürüm
@@ -65,9 +72,10 @@ keytool -genkey -v -keystore frontend/android/tugrul.keystore -alias tugrul \
 | Alan | Değer |
 |---|---|
 | Paket | `com.tugrul.studio` |
-| Sürüm | `1.0.0` (versionCode 1) |
+| Sürüm | `1.0.1` (versionCode 2) |
 | minSdk / targetSdk | 22 / 34 |
-| İzinler | INTERNET, ACCESS_NETWORK_STATE |
+| İzinler | INTERNET, ACCESS_NETWORK_STATE, WRITE_EXTERNAL_STORAGE (yalnız API ≤ 28) |
+| Kayıt yolu | `TUGRUL DOWNLOAD/<başlık>.<uzantı>` (paylaşılan depolama; izin verilmezse uygulama klasörü) |
 | Ekstra | Paylaş menüsünden bağlantı alma (`ACTION_SEND`), `tugrul://open` derin bağlantısı |
 
 ## Mağaza notu

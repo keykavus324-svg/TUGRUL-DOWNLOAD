@@ -59,12 +59,13 @@ export async function proxyHealth(timeoutMs = 6000): Promise<ProxyHealth> {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), timeoutMs);
   try {
-    const r = await fetch(`${proxyBase()}/api/health`, { signal: ctl.signal });
+    const r = await proxyFetch("/api/health", { signal: ctl.signal });
     if (!r.ok) return { ok: false, detail: `HTTP ${r.status}` };
     const d = (await r.json()) as { ok?: boolean; ytdlp?: string; chunk?: number };
     return { ok: !!d.ok, ytdlp: d.ytdlp, chunk: d.chunk || FALLBACK_CHUNK };
   } catch (e) {
-    return { ok: false, detail: (e as Error).message || "bağlanılamadı" };
+    const msg = (e as Error).message || "bağlanılamadı";
+    return { ok: false, detail: /Failed to fetch|NetworkError/i.test(msg) ? `${PROTECTED} (ya da ağ yok)` : msg };
   } finally {
     clearTimeout(timer);
   }
@@ -159,6 +160,22 @@ export function toMediaInfo(d: RawInfo, url: string): MediaInfo {
   };
 }
 
+const PROTECTED =
+  "İndirme motoru Vercel girişi istiyor: Project Settings → Deployment Protection → “Only Preview Deployments” yapın.";
+
+/**
+ * Uca istek atar. Vercel'in _Deployment Protection_ koruması açıksa adres
+ * vercel.com/login'e 307 döner; `redirect: "manual"` ile bunu yakalayıp
+ * kullanıcıya anlaşılır bir Türkçe mesaj veriyoruz ("Failed to fetch" yerine).
+ */
+async function proxyFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  const r = await fetch(`${proxyBase()}${path}`, { redirect: "manual", ...init });
+  if (r.type === "opaqueredirect" || r.status === 0) throw new Error(PROTECTED);
+  const loc = r.headers.get("location") || "";
+  if (r.status >= 300 && r.status < 400 && /vercel\.com\/login|sso/i.test(loc)) throw new Error(PROTECTED);
+  return r;
+}
+
 async function readError(r: Response): Promise<string> {
   let detail = "";
   try {
@@ -172,7 +189,7 @@ async function readError(r: Response): Promise<string> {
 
 /** Bağlantıyı çöz: başlık, süre, formatlar. */
 export async function proxyInfo(url: string): Promise<MediaInfo> {
-  const r = await fetch(`${proxyBase()}/api/info`, {
+  const r = await proxyFetch("/api/info", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url }),
@@ -191,7 +208,7 @@ export type Resolved = {
 
 /** Seçilen format için imzalı akış belirteci alır. */
 export async function proxyResolve(url: string, formatId = ""): Promise<Resolved> {
-  const r = await fetch(`${proxyBase()}/api/resolve`, {
+  const r = await proxyFetch("/api/resolve", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ url, format_id: formatId }),
@@ -242,7 +259,7 @@ export async function proxyDownload(opts: {
   for (;;) {
     if (opts.signal?.aborted) throw new DOMException("İptal edildi", "AbortError");
     const qs = new URLSearchParams({ token: res.token, start: String(offset), length: String(chunk) });
-    const r = await fetch(`${proxyBase()}/api/stream?${qs.toString()}`, { signal: opts.signal });
+    const r = await proxyFetch(`/api/stream?${qs.toString()}`, { signal: opts.signal });
     if (!r.ok) throw new Error(await readError(r));
     const buf = await r.arrayBuffer();
     const head = Number(r.headers.get("X-Tug-Total") || 0);

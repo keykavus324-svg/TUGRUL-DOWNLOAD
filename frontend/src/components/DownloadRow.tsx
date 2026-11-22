@@ -6,12 +6,14 @@ import {
   FileAudio,
   FileVideo,
   FolderOpen,
+  Loader2,
   Pause,
   Play,
   RotateCw,
   Trash2,
 } from "lucide-react";
-import { bytes, downloadUrl, statusLabel, statusTone } from "../lib";
+import { bytes, statusLabel, statusTone } from "../lib";
+import { saveDownload } from "../save";
 import { useApp } from "../store";
 import type { Download as DL } from "../types";
 
@@ -26,6 +28,21 @@ export default function DownloadRow({
 }) {
   const { toast } = useApp();
   const [hover, setHover] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  /** Dosyayı cihaza kaydeder (APK'da diske, tarayıcıda İndirilenler'e). */
+  const save = async () => {
+    setSaving(true);
+    try {
+      const res = await saveDownload(item.id, item.filepath || item.title || "indirme");
+      if (res.ok) toast("ok", res.native ? "Cihaza kaydedildi" : "İndirildi", res.path);
+      else toast("err", "Kaydedilemedi", res.message);
+    } catch (e) {
+      toast("err", "Kaydedilemedi", (e as Error).message);
+    } finally {
+      setSaving(false);
+    }
+  };
   const active = item.status === "downloading" || item.status === "processing";
 
   const act = async (action: "pause" | "resume" | "cancel" | "retry" | "delete") => {
@@ -81,13 +98,14 @@ export default function DownloadRow({
 
             <div className="flex shrink-0 items-center gap-0.5">
               {item.status === "completed" && (
-                <a
-                  href={downloadUrl(item.id)}
-                  className="rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/[0.07] hover:text-emerald-300"
-                  title="İndir"
+                <button
+                  onClick={save}
+                  disabled={saving}
+                  className="rounded-lg p-1.5 text-zinc-400 transition hover:bg-white/[0.07] hover:text-emerald-300 disabled:opacity-50"
+                  title="Cihaza kaydet"
                 >
-                  <Download className="h-4 w-4" />
-                </a>
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                </button>
               )}
               {(active || item.status === "paused") && (
                 <button

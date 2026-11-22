@@ -48,7 +48,7 @@
             app:title="@string/changelog">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/deniscerri/ytdlnis/releases" />
+                android:data="https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases" />
         </Preference>
 
     </PreferenceCategory>

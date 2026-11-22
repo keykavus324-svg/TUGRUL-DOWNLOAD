@@ -67,11 +67,9 @@ object UpdateSettingsModule : SettingModule {
             }
             UpdateCheckWorker.PREF_TYPES -> {
                 (pref as MultiSelectListPreference).apply {
-                    // app updates are only offered by the GitHub build
-                    if (BuildConfig.FLAVOR != "github") {
-                        entries = entries.drop(1).toTypedArray()
-                        entryValues = entryValues.drop(1).toTypedArray()
-                    }
+                    // Application update checks are disabled until this fork has a verified update channel.
+                    entries = entries.drop(1).toTypedArray()
+                    entryValues = entryValues.drop(1).toTypedArray()
                     fun setSummary(selected: Set<String>) {
                         summary = entryValues.indices.filter { selected.contains(entryValues[it]) }
                             .joinToString(", ") { entries[it] }

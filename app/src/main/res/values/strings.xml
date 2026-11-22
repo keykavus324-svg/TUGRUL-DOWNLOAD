@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="upstream_project">Based on YTDLnis</string>
+    <string name="app_name" translatable="false">TUĞRUL DOWNLOAD</string>
     <string name="worst_quality">Worst quality</string>
     <string name="best_quality">Best quality</string>
     <string name="search">Search</string>
@@ -590,7 +592,7 @@
         <item quantity="one">Every minute</item>
         <item quantity="other">Every %d minutes</item>
     </plurals>
-    <string name="bgutils_info">A proof-of-origin token (POT) provider for yt-dlp.\nWith it enabled, TUGRUL DOWNLOAD hosts the HTTP server that generates the POT and installs the related plugin that yt-dlp uses.</string>
+    <string name="bgutils_info">A proof-of-origin token (POT) provider for yt-dlp.\nWith it enabled, TUĞRUL DOWNLOAD hosts the HTTP server that generates the POT and installs the related plugin that yt-dlp uses.</string>
     <string name="bgutils_pot_generation_script">Generation script</string>
     <string name="bgutils_pot_generation_server">HTTP server</string>
     <string name="bgutils_pot_generation_script_summary">Every yt-dlp call incurs the overhead of spawning a new js runtime process to run the script. This method is not recommended for high concurrency usage.</string>
@@ -604,7 +606,7 @@
     <string name="installer_system_unavailable">Not available in this build. Pick Shizuku or an installer app below</string>
     <string name="installer_shizuku_description">Installs in the background through Shizuku</string>
     <string name="installer_shizuku_not_running">Shizuku is not running. Start it first</string>
-    <string name="allow_install_unknown_apps">Allow TUGRUL DOWNLOAD to install apps, then try again</string>
+    <string name="allow_install_unknown_apps">Allow TUĞRUL DOWNLOAD to install apps, then try again</string>
     <string name="install_cancelled">Installation cancelled</string>
     <string name="install_failed_code">Install failed (code %1$s)</string>
     <string name="install_failed_incompatible">Install failed: the installed version is signed with a different key. Uninstall it first</string>
@@ -615,7 +617,7 @@
     <string name="notset">Not set</string>
     <string name="external">External</string>
     <string name="exit">Exit</string>
-    <string name="packages_description">Packages are helper applications TUGRUL DOWNLOAD uses to help with yt-dlp commands. Some of them are already bundled, but you can install newer versions that are published without the need to update the app. The installed apk\'s replace the bundled version that the app uses.</string>
+    <string name="packages_description">Packages are helper applications TUĞRUL DOWNLOAD uses to help with yt-dlp commands. Some of them are already bundled, but you can install newer versions that are published without the need to update the app. The installed apk\'s replace the bundled version that the app uses.</string>
     <string name="bgutils_pot_generation_script_info">In order to use the BgUtils POT Provider, the app needs to download Brainicism/bgutil-ytdlp-pot-provider repo from github and initiate the installation. This might take a while to finish. Proceed now?</string>
     <string name="burn_subs">Burn subtitles</string>
     <string name="check_clipboard_home_summary">Automatically detect URLs in clipboard in the home screen</string>
@@ -684,7 +686,7 @@
     <string name="download_anyway">Download anyway</string>
     <string name="write_ytdlp_terminal">Auto write yt-dlp in terminal</string>
     <string name="clear">Clear</string>
-    <string name="welcome_title">Welcome to TUGRUL DOWNLOAD</string>
+    <string name="welcome_title">Welcome to TUĞRUL DOWNLOAD</string>
     <string name="welcome_subtitle">Download video and audio using yt-dlp. Let\'s get a few things set up first.</string>
     <string name="welcome_get_started">Get started</string>
     <string name="welcome_restore_backup">Restore from backup</string>
@@ -694,7 +696,7 @@
     <string name="welcome_guide_summary">The guide covers everything about the app, downloading, command templates and fixing common problems. You can open it any time from the website.</string>
     <string name="welcome_open_guide">Open guide</string>
     <string name="welcome_permissions_title">Permissions</string>
-    <string name="welcome_permissions_summary">TUGRUL DOWNLOAD works best with these. You can change them later in the settings.</string>
+    <string name="welcome_permissions_summary">TUĞRUL DOWNLOAD works best with these. You can change them later in the settings.</string>
     <string name="welcome_perm_storage">Storage access</string>
     <string name="welcome_perm_storage_summary">Needed to save your downloads to the device.</string>
     <string name="welcome_perm_notifications">Notifications</string>
@@ -709,7 +711,7 @@
     <string name="welcome_perm_folders_header">Restored folders</string>
     <string name="welcome_perm_folders_summary">Your backup uses these folders, but the app lost access to them. Allow each one again, or pick a different folder to use instead.</string>
     <string name="welcome_updates_title">Updates</string>
-    <string name="welcome_updates_summary">Choose how TUGRUL DOWNLOAD stays up to date.</string>
+    <string name="welcome_updates_summary">Choose how TUĞRUL DOWNLOAD stays up to date.</string>
     <string name="welcome_next">Next</string>
     <string name="welcome_finish">Finish</string>
     <string name="background">Background</string>

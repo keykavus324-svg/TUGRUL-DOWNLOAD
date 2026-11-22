@@ -25,7 +25,7 @@ import java.io.File
 
 
 object AppUpdateSettingsModule : SettingModule {
-    private val canUpdateApp = BuildConfig.FLAVOR == "github"
+    private const val canUpdateApp = false
 
     override fun bindLogic(pref: Preference, host: SettingHost) {
         val context = pref.context

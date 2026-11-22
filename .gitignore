@@ -10,3 +10,6 @@
 /benchmark
 app/src/main/jniLibs
 .kotlin
+
+__pycache__/
+*.pyc

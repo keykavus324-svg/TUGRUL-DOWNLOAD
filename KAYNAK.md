@@ -1,6 +1,6 @@
 # Kaynak ve derleme
 
-Bu depo, [deniscerri/ytdlnis](https://github.com/deniscerri/ytdlnis) Android projesinin `dc35efe6549b421ec556f47019d74d052fa570bc` revizyonundaki kaynak kodunu temel alır. Önceki web uygulaması kaldırılmıştır. Kaynak projenin lisansı ve telif bildirimleri korunmuştur; ayrıntılar için `LICENSE` ve özgün `README.md` dosyasına bakın. YTDLnis adının kullanımıyla ilgili kısıtlamalar da özgün README'de açıklanır.
+Bu depo, [deniscerri/ytdlnis](https://github.com/deniscerri/ytdlnis) Android projesinin `dc35efe6549b421ec556f47019d74d052fa570bc` revizyonundaki kaynak kodunu temel alır. Önceki web uygulaması kaldırılmıştır. Kaynak projenin lisansı ve telif bildirimleri korunmuştur; ayrıntılar için `LICENSE` ve özgün `docs/UPSTREAM-README.md` dosyasına bakın. YTDLnis adının kullanımıyla ilgili kısıtlamalar da özgün proje README'sinde açıklanır.
 
 Uygulama TUGRUL DOWNLOAD adı ve `com.tugrul.download` uygulama kimliğiyle yapılandırılmıştır; Kotlin kaynak paketleri kaynak projeyle uyumluluk için korunmuştur. Kaynak projenin APK güncellemeleri farklı paket ve imza kullandığından uygulama güncelleme kanalı devre dışıdır; yt-dlp ve yardımcı paket güncellemeleri korunmuştur. Yeni kimlik nedeniyle eski YTDLnis kurulumunun verileri otomatik olarak taşınmaz. Kaynak depodaki otomasyon iş akışları, bu depoya ait olmayan yayınlama ve bildirim işlemlerini çalıştırmamaları için dahil edilmemiştir. Gradle ayarlarında kaynak depoda bulunmayan ve uygulamanın bağımlılığı olmayan boş modül girdileri çıkarılmıştır.
 

@@ -128,7 +128,7 @@ class BgUtilsPoTokenGeneratorService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("TUGRUL DOWNLOAD BgUtils POT Provider\n")
+            .setContentTitle("TUĞRUL DOWNLOAD BgUtils POT Provider\n")
             .setContentText(description)
             .setSmallIcon(R.drawable.baseline_token_24)
             .setPriority(NotificationCompat.PRIORITY_LOW)

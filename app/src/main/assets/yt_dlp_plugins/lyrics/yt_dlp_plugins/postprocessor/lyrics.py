@@ -10,7 +10,7 @@ from yt_dlp.postprocessor.common import PostProcessor
 from yt_dlp.utils import PostProcessingError
 
 API = 'https://lrclib.net/api'
-USER_AGENT = 'YTDLnis (https://github.com/deniscerri/ytdlnis)'
+USER_AGENT = 'TUGRUL DOWNLOAD (https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD)'
 APPLICATION_ID = 'DzQSE74gVl7mtIo7csJ2ZkJhZXvr-8v3ilv7k9SB6SM'
 DURATION_TOLERANCE = 5
 MAX_ATTEMPTS = 4

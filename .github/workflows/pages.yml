@@ -49,6 +49,20 @@ jobs:
         working-directory: frontend
         run: node offline-render.mjs
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Motor bağımlılıkları (testler için)
+        run: python -m pip install --quiet "fastapi==0.115.6" "httpx==0.28.1" "uvicorn==0.34.0" "yt-dlp==2026.10.26"
+
+      - name: Proxy API testi (info → resolve → stream → birleştirme)
+        run: python vercel-api/test_api.py
+
+      - name: Gerçek indirme akışı testi (arayüz → proxy → dosya bayt bayt)
+        working-directory: frontend
+        run: node proxy-download-test.mjs
+
       - name: Statik derleme (çevrimdışı motor)
         working-directory: frontend
         run: npx vite build --mode ghpages

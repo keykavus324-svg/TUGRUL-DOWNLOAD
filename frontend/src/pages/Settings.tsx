@@ -20,6 +20,7 @@ import {
 import Modal, { Field, Toggle } from "../components/Modal";
 import { api, bytes } from "../lib";
 import { inAndroidShell, serverBase, setServerBase } from "../engine";
+import { DEFAULT_PROXY, proxyBase, proxyHealth, setProxyBase } from "../proxy";
 import { useApp } from "../store";
 
 const SECTIONS = [
@@ -116,13 +117,37 @@ export default function SettingsPage() {
                   </div>
                 </div>
               </Field>
+              <div className="rounded-xl border border-gold-400/25 bg-gold-400/[0.05] p-3">
+                <p className="text-[12px] font-semibold text-gold-200">İndirme motoru (yt-dlp proxy)</p>
+                <p className="mt-0.5 text-[11px] leading-relaxed text-gold-200/70">
+                  Bağlantılar bu uçta çözülür, dosya parça parça cihaza iner. Kendi sunucunuzu
+                  kullanmak isterseniz adresi değiştirin; boş bırakırsanız ortak uç kullanılır.
+                </p>
+                <input
+                  defaultValue={proxyBase()}
+                  placeholder={DEFAULT_PROXY}
+                  onChange={(e) => setProxyBase(e.target.value)}
+                  className="input mt-2 font-mono !text-[12px]"
+                />
+                <button
+                  onClick={async () => {
+                    const h = await proxyHealth();
+                    if (h.ok) toast("ok", "Motor hazır", `yt-dlp ${h.ytdlp || ""}`);
+                    else toast("err", "Motora ulaşılamadı", h.detail || "adres yanlış olabilir");
+                  }}
+                  className="btn-outline mt-2 !py-1.5 !text-[11.5px]"
+                >
+                  Motoru test et
+                </button>
+              </div>
               {inAndroidShell() && (
                 <div className="rounded-xl border border-teal-400/25 bg-teal-400/[0.05] p-3">
-                  <p className="text-[12px] font-semibold text-teal-200">Bağlı sunucu (gerçek yt-dlp motoru)</p>
+                  <p className="text-[12px] font-semibold text-teal-200">Yerel sunucu (tam güç: FFmpeg + kuyruk)</p>
                   <p className="mt-0.5 text-[11px] leading-relaxed text-teal-200/70">
-                    Boş bırakılırsa uygulama çevrimdışı demo motoruyla çalışır. Bilgisayarınızda
+                    Bilgisayarınızda
                     <code className="mx-1 rounded bg-black/30 px-1">bash scripts/start.sh</code>
-                    çalıştırıp adresi buraya yazın (ör. http://192.168.1.20:8000).
+                    çalıştırıp adresi buraya yazın (ör. http://192.168.1.20:8000). Doluysa tüm işler
+                    o sunucuda yürür; boşsa yukarıdaki proxy ucu kullanılır.
                   </p>
                   <input
                     defaultValue={serverBase()}

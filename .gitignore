@@ -42,5 +42,12 @@ frontend/android/app/src/main/assets/capacitor.config.json
 frontend/android/app/src/main/assets/capacitor.plugins.json
 frontend/android/app/src/main/assets/capacitor-cordova-android-plugins/
 
+# yerel test sanal ortamları / jsdom test geçici dosyaları
+.venv-api/
+frontend/.proxy-*.mjs
+frontend/.off.mjs
+frontend/.app2.mjs
+frontend/.app-render.mjs
+
 # Çalışma zamanı
 data/*.db*

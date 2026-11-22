@@ -31,7 +31,6 @@ export default function Home() {
   const [playlist, setPlaylist] = useState<PlaylistInfo | null>(null);
   const [error, setError] = useState("");
   const [samples, setSamples] = useState<Sample[]>([]);
-  const [quick, setQuick] = useState(false);
   const [mode, setMode] = useState<"video" | "audio">("video");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -42,24 +41,54 @@ export default function Home() {
   useEffect(() => {
     const onPaste = (e: ClipboardEvent) => {
       const text = e.clipboardData?.getData("text") || "";
-      if (text && isUrl(text) && !input && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+      const active = document.activeElement?.tagName;
+      const typing = active === "INPUT" || active === "TEXTAREA";
+      if (text && isUrl(text) && !typing) {
+        // yapıştır → indirme hemen başlar
+        e.preventDefault();
         setInput(text.trim());
-        toast("info", "Panodan alındı", text.slice(0, 80));
+        submit(text.trim());
       }
     };
     window.addEventListener("paste", onPaste);
     return () => window.removeEventListener("paste", onPaste);
-  }, [input, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, toast]);
 
   async function pasteFromClipboard() {
     try {
       const text = await navigator.clipboard.readText();
       if (text) {
         setInput(text.trim());
-        analyze(text.trim());
+        submit(text.trim());
       }
     } catch {
       toast("info", "Pano okunamadı", "Bağlantıyı elle yapıştırın.");
+    }
+  }
+
+  /** Bağlantıyı beklemeden kuyruğa alır — indirme hemen başlar. */
+  async function submit(raw?: string) {
+    const url = (raw ?? input).trim();
+    if (!url) return;
+    if (!isUrl(url)) {
+      setError("Geçerli bir bağlantı girin (https://… veya 11 haneli YouTube kimliği).");
+      return;
+    }
+    setError("");
+    setInput("");
+    try {
+      const res = await post<{ item: { id: number } }>("/api/downloads", {
+        url,
+        dl_type: mode,
+        format_id: "",
+      });
+      toast("ok", "İndirme başladı", url.slice(0, 80));
+      refresh();
+      return res;
+    } catch (e) {
+      setError((e as Error).message);
+      toast("err", "İndirme başlatılamadı", (e as Error).message);
     }
   }
 
@@ -84,23 +113,6 @@ export default function Home() {
         setPlaylist(data as PlaylistInfo);
       } else {
         setInfo(data as MediaInfo);
-        if (quick) {
-          const d = data as MediaInfo;
-          const fmt = mode === "audio" ? "mp3" : d.best_video?.format_id || "";
-          const res = await post<{ duplicate: boolean }>("/api/downloads", {
-            url: d.webpage_url,
-            dl_type: mode,
-            format_id: fmt,
-            title: d.title,
-            thumbnail: typeof d.thumbnail === "string" ? d.thumbnail : "",
-            uploader: d.uploader,
-            duration: d.duration,
-          });
-          if (res.duplicate) toast("info", "Bu içerik zaten indirilmiş", d.title);
-          else toast("ok", "Hızlı indirme başladı", d.title);
-          setInput("");
-          refresh();
-        }
       }
     } catch (e) {
       setError((e as Error).message);
@@ -151,8 +163,8 @@ export default function Home() {
                   setInput(e.target.value);
                   setError("");
                 }}
-                onKeyDown={(e) => e.key === "Enter" && analyze()}
-                placeholder="https://youtube.com/watch?v=… veya demo://demo001"
+                onKeyDown={(e) => e.key === "Enter" && submit()}
+                placeholder="Bağlantıyı yapıştırın — https://youtube.com/watch?v=…"
                 spellCheck={false}
                 className="min-w-0 flex-1 bg-transparent px-1 text-[13.5px] text-white placeholder:text-zinc-600 outline-none"
               />
@@ -164,33 +176,36 @@ export default function Home() {
               <button onClick={pasteFromClipboard} className="hidden rounded-lg p-2 text-zinc-500 transition hover:bg-white/5 hover:text-white sm:block" title="Panodan yapıştır">
                 <ClipboardPaste className="h-4 w-4" />
               </button>
-              <button onClick={() => analyze()} disabled={loading || !input.trim()} className="btn-gold shrink-0 !px-3.5 !py-2">
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                <span className="hidden sm:inline">{loading ? "Çözülüyor" : "Çözümle"}</span>
+              <button
+                onClick={() => analyze()}
+                disabled={loading || !input.trim()}
+                title="Format listesini aç"
+                className="shrink-0 rounded-xl border border-white/[0.09] bg-white/[0.03] px-3 py-2 text-[12px] text-zinc-300 transition hover:border-white/20 hover:text-white disabled:opacity-40"
+              >
+                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ListVideo className="h-4 w-4" />}
+              </button>
+              <button onClick={() => submit()} disabled={!input.trim()} className="btn-gold shrink-0 !px-3.5 !py-2">
+                <Zap className="h-4 w-4" />
+                <span className="hidden sm:inline">İndir</span>
               </button>
             </div>
             {error && <p className="mt-2 text-[12px] text-rose-300">{error}</p>}
 
             <div className="mt-2.5 flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => setQuick((v) => !v)}
-                className={`chip transition ${quick ? "bg-emerald-400/15 text-emerald-300 ring-emerald-400/30" : "bg-white/[0.04] text-zinc-500 ring-white/10 hover:text-zinc-300"}`}
-              >
-                <Zap className="h-3 w-3" /> Hızlı indirme {quick ? "açık" : "kapalı"}
-              </button>
-              {quick && (
-                <div className="flex rounded-lg bg-white/[0.04] p-0.5 ring-1 ring-white/10">
-                  {(["video", "audio"] as const).map((m) => (
-                    <button
-                      key={m}
-                      onClick={() => setMode(m)}
-                      className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition ${mode === m ? "bg-gold-400 text-ink-950" : "text-zinc-400"}`}
-                    >
-                      {m === "video" ? "Video" : "Ses"}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <span className="chip bg-emerald-400/15 text-emerald-300 ring-emerald-400/30">
+                <Zap className="h-3 w-3" /> Yapıştır → indirme başlar
+              </span>
+              <div className="flex rounded-lg bg-white/[0.04] p-0.5 ring-1 ring-white/10">
+                {(["video", "audio"] as const).map((m) => (
+                  <button
+                    key={m}
+                    onClick={() => setMode(m)}
+                    className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition ${mode === m ? "bg-gold-400 text-ink-950" : "text-zinc-400"}`}
+                  >
+                    {m === "video" ? "Video" : "Ses"}
+                  </button>
+                ))}
+              </div>
               <span className="ml-auto hidden items-center gap-1 text-[10.5px] text-zinc-600 sm:flex">
                 <Clipboard className="h-3 w-3" /> Ctrl+V ile panodan yapıştırın
               </span>
@@ -200,14 +215,14 @@ export default function Home() {
           {/* örnekler */}
           {samples.length > 0 && !info && !playlist && (
             <div className="mt-4">
-              <p className="label mb-2">Hemen deneyin · gerçek indirme</p>
+              <p className="label mb-2">Örnek bağlantılar</p>
               <div className="flex flex-wrap gap-1.5">
                 {samples.map((s) => (
                   <button
                     key={s.url}
                     onClick={() => {
                       setInput(s.url);
-                      analyze(s.url);
+                      submit(s.url);
                     }}
                     className="group flex items-center gap-2 rounded-xl border border-white/[0.07] bg-white/[0.02] py-1.5 pl-1.5 pr-3 text-left transition hover:border-gold-400/30 hover:bg-gold-400/[0.06]"
                   >

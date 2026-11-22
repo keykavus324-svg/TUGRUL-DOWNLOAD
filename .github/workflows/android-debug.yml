@@ -20,7 +20,7 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
+      # GitHub's Android runner image already includes the SDK and licenses.
       - name: Build debug APKs
         run: ./gradlew assembleGithubDebug --no-daemon
       - uses: actions/upload-artifact@v4

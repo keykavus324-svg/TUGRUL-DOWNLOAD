@@ -21,7 +21,6 @@ import com.yausername.youtubedl_android.YoutubeDLResponse;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,7 +42,7 @@ import kotlin.jvm.functions.Function3;
 @CapacitorPlugin(
         name = "TugrulYtdlp",
         permissions = {
-                @Permission(alias = "storage", permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE})
+                @Permission(alias = "storage", strings = {Manifest.permission.WRITE_EXTERNAL_STORAGE})
         }
 )
 public class YtdlpPlugin extends Plugin {

@@ -1,0 +1,57 @@
+name: Android debug APK
+
+on:
+  push:
+    branches:
+      - 'arena/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      # GitHub's Android runner image already includes the SDK and licenses.
+      - name: Build debug APKs
+        shell: bash
+        run: |
+          set -o pipefail
+          touch local.properties
+          ./gradlew assembleGithubDebug --no-daemon 2>&1 | tee gradle-output.log || {
+            details=$(tail -18 gradle-output.log)
+            details=${details//'%'/'%25'}
+            details=${details//$'\n'/'%0A'}
+            echo "::error::$details"
+            exit 1
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tugrul-download-debug
+          path: app/build/outputs/apk/github/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+      - name: Publish universal debug APK
+        if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[publish-apk]')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          shopt -s nullglob
+          apks=(app/build/outputs/apk/github/debug/*universal*.apk)
+          if [ "${#apks[@]}" -ne 1 ]; then
+            echo "Expected exactly one universal APK, found ${#apks[@]}" >&2
+            exit 1
+          fi
+          gh release create "debug-${GITHUB_RUN_NUMBER}" "${apks[0]}" \
+            --target "$GITHUB_SHA" --prerelease \
+            --title "TUGRUL DOWNLOAD debug ${GITHUB_RUN_NUMBER}" \
+            --notes "Android debug test sürümü. Üretim sürümü değildir."
+

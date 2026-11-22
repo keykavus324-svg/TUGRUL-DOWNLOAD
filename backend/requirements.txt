@@ -1,6 +1,0 @@
-yt-dlp>=2024.1.0
-fastapi>=0.110.0
-uvicorn[standard]>=0.29.0
-imageio-ffmpeg>=0.5.1
-python-multipart>=0.0.9
-httpx>=0.27.0

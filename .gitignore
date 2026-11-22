@@ -1,54 +1,12 @@
-# bağımlılıklar
-node_modules/
-.pnpm-store/
-__pycache__/
-*.pyc
-.venv/
-venv/
-
-# derleme çıktıları
-frontend/dist/
-dist/
-build/
-*.egg-info/
-
-# çalışma verisi
-data/*.db
-data/*.db-shm
-data/*.db-wal
-data/cache/
-data/demo/
-downloads/
-*.part
-*.ytdl
-cookies.txt
-
-# editör / işletim sistemi
+*.iml
+.gradle
+/local.properties
+/keystore.properties
+/.idea
 .DS_Store
-.idea/
-.vscode/
-*.log
-.pytest_cache/
-.env
-
-# Android derleme çıktıları
-dist-apk/
-frontend/android/app/build/
-frontend/android/build/
-frontend/android/.gradle/
-frontend/android/local.properties
-frontend/android/app/src/main/assets/public/
-frontend/android/app/src/main/assets/capacitor.config.json
-frontend/android/app/src/main/assets/capacitor.plugins.json
-frontend/android/app/src/main/assets/capacitor-cordova-android-plugins/
-
-# yerel test sanal ortamları / jsdom test geçici dosyaları
-.venv-api/
-frontend/.proxy-*.mjs
-frontend/.native-*.mjs
-frontend/.off.mjs
-frontend/.app2.mjs
-frontend/.app-render.mjs
-
-# Çalışma zamanı
-data/*.db*
+/build
+/captures
+.externalNativeBuild
+/benchmark
+app/src/main/jniLibs
+.kotlin

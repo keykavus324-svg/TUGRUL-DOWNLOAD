@@ -25,6 +25,7 @@ jobs:
         shell: bash
         run: |
           set -o pipefail
+          touch local.properties
           ./gradlew assembleGithubDebug --no-daemon 2>&1 | tee gradle-output.log || {
             details=$(tail -18 gradle-output.log)
             details=${details//'%'/'%25'}

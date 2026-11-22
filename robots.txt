@@ -1,0 +1,4 @@
+/** GitHub Pages · sunucusuz çevrimdışı motor **/
+/* demo medya: sayfa önbelleğine alınmasın */
+/*.mp4
+/*.mp3

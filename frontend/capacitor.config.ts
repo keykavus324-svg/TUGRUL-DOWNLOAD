@@ -4,9 +4,10 @@ const config: CapacitorConfig = {
   appId: "com.tugrul.studio",
   appName: "TUĞRUL DOWNLOAD",
   webDir: "dist",
-  bundledWebRuntime: false,
   android: {
-    allowMixedContent: false,
+    // Ayarlar → "Yerel sunucu" alanına http://192.168.1.x:8000 yazıldığında
+    // WebView'in o adrese gitmesine izin ver (kendi ağınızdaki motor).
+    allowMixedContent: true,
     backgroundColor: "#07080c",
   },
   server: {

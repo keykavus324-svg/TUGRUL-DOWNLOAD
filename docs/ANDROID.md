@@ -6,7 +6,7 @@ paketlenmiş hâlidir: tek kod tabanı, iki dağıtım (web + APK).
 ## Hazır APK'yı indir
 
 * **Sürümler sayfası:** <https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest>
-  → `tugrul-download-1.0.1-debug.apk`
+  → `tugrul-download-1.0.2-debug.apk`
 * Ya da Actions → **Sürüm paketleri** → Artifacts → `tugrul-download-apk`
 
 Kurulum: APK'yı telefona indir → aç → “bilinmeyen kaynaklara izin ver” → kur.
@@ -19,6 +19,10 @@ Uygulama `com.tugrul.studio` paket adıyla, kendi ikonu ve başlangıç ekranıy
 | **Cihaz (APK içi)** | Arayüz + kuyruk, ilerleme, duraklat/devam, kalıcılık (IndexedDB), izleme/şablon/istatistik. Dosya parça parça inince **diske yazılır** (`TUGRUL DOWNLOAD` klasörü). |
 | **Motor (varsayılan)** | Sunucusuz yt-dlp ucu: `https://tugrul-run-tugrul1.vercel.app/api/index` — Ayarlar → **İndirme motoru** alanından değiştirilebilir. |
 | **Motor (yerel, tam güç)** | Ayarlar → **Yerel sunucu** = `http://<bilgisayar-ip>:8000` → aynı ağdaki TUĞRUL DOWNLOAD sunucusu: FFmpeg stüdyosu, toplu işler, oynatma listeleri. |
+
+> Bu alan çalışsın diye APK düz HTTP'ye izin verir (`usesCleartextTraffic=true`,
+> `allowMixedContent=true`). Yalnızca **kendi ağınızdaki** motoru yazın; alanı boş
+> bırakırsanız tüm trafik HTTPS proxy ucuna gider.
 
 Bağlantıyı yapıştırmanız yeterli — indirme hemen başlar.
 
@@ -48,7 +52,7 @@ Telefonda: **Ayarlar → Bağlı sunucu → `http://192.168.1.20:8000` → Bağl
 export ANDROID_HOME=$HOME/Android/Sdk
 bash scripts/build-apk.sh            # debug APK
 bash scripts/build-apk.sh release    # imzalı sürüm (keystore.properties gerekir)
-# → dist-apk/tugrul-download-1.0.1-debug.apk
+# → dist-apk/tugrul-download-1.0.2-debug.apk
 ```
 
 ### İmzalı sürüm
@@ -72,7 +76,7 @@ keytool -genkey -v -keystore frontend/android/tugrul.keystore -alias tugrul \
 | Alan | Değer |
 |---|---|
 | Paket | `com.tugrul.studio` |
-| Sürüm | `1.0.1` (versionCode 2) |
+| Sürüm | `1.0.2` (versionCode 3) |
 | minSdk / targetSdk | 22 / 34 |
 | İzinler | INTERNET, ACCESS_NETWORK_STATE, WRITE_EXTERNAL_STORAGE (yalnız API ≤ 28) |
 | Kayıt yolu | `TUGRUL DOWNLOAD/<başlık>.<uzantı>` (paylaşılan depolama; izin verilmezse uygulama klasörü) |

@@ -21,6 +21,8 @@ import Modal, { Field, Toggle } from "../components/Modal";
 import { api, bytes } from "../lib";
 import { inAndroidShell, serverBase, setServerBase } from "../engine";
 import { DEFAULT_PROXY, proxyBase, proxyHealth, setProxyBase } from "../proxy";
+import { nativeAvailable } from "../offline";
+import { nativeInit } from "../native";
 import { useApp } from "../store";
 
 const SECTIONS = [
@@ -39,6 +41,19 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [restoreOpen, setRestoreOpen] = useState(false);
   const [restoreText, setRestoreText] = useState("");
+  // APK'da yt-dlp cihazın içinde çalışır; bu durumda proxy alanına gerek yok
+  const [onDevice, setOnDevice] = useState(false);
+  useEffect(() => {
+    let live = true;
+    nativeAvailable()
+      .then((v) => {
+        if (live) setOnDevice(v);
+      })
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
   const fileRef = useRef<HTMLInputElement>(null);
   const cookieRef = useRef<HTMLInputElement>(null);
 
@@ -117,29 +132,51 @@ export default function SettingsPage() {
                   </div>
                 </div>
               </Field>
-              <div className="rounded-xl border border-gold-400/25 bg-gold-400/[0.05] p-3">
-                <p className="text-[12px] font-semibold text-gold-200">İndirme motoru (yt-dlp proxy)</p>
-                <p className="mt-0.5 text-[11px] leading-relaxed text-gold-200/70">
-                  Bağlantılar bu uçta çözülür, dosya parça parça cihaza iner. Kendi sunucunuzu
-                  kullanmak isterseniz adresi değiştirin; boş bırakırsanız ortak uç kullanılır.
-                </p>
-                <input
-                  defaultValue={proxyBase()}
-                  placeholder={DEFAULT_PROXY}
-                  onChange={(e) => setProxyBase(e.target.value)}
-                  className="input mt-2 font-mono !text-[12px]"
-                />
-                <button
-                  onClick={async () => {
-                    const h = await proxyHealth();
-                    if (h.ok) toast("ok", "Motor hazır", `yt-dlp ${h.ytdlp || ""}`);
-                    else toast("err", "Motora ulaşılamadı", h.detail || "adres yanlış olabilir");
-                  }}
-                  className="btn-outline mt-2 !py-1.5 !text-[11.5px]"
-                >
-                  Motoru test et
-                </button>
-              </div>
+              {onDevice ? (
+                <div className="rounded-xl border border-gold-400/25 bg-gold-400/[0.05] p-3">
+                  <p className="text-[12px] font-semibold text-gold-200">İndirme motoru: cihaz içi yt-dlp</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-gold-200/70">
+                    yt-dlp, Python ve FFmpeg uygulamanın içinde çalışır — indirme için internetten
+                    başka hiçbir sunucu gerekmez. Dosyalar telefonun İndirilenler klasöründeki
+                    <code className="mx-1 rounded bg-black/30 px-1">TUGRUL DOWNLOAD</code>
+                    dizinine yazılır.
+                  </p>
+                  <button
+                    onClick={async () => {
+                      const r = await nativeInit();
+                      if (r.ok) toast("ok", "Motor hazır", `yt-dlp ${r.version || ""}`);
+                      else toast("err", "Motor hazırlanamadı", r.detail || "");
+                    }}
+                    className="btn-outline mt-2 !py-1.5 !text-[11.5px]"
+                  >
+                    Motoru test et
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-xl border border-gold-400/25 bg-gold-400/[0.05] p-3">
+                  <p className="text-[12px] font-semibold text-gold-200">İndirme motoru (yt-dlp proxy)</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-gold-200/70">
+                    Bağlantılar bu uçta çözülür, dosya parça parça cihaza iner. Kendi sunucunuzu
+                    kullanmak isterseniz adresi değiştirin; boş bırakırsanız ortak uç kullanılır.
+                  </p>
+                  <input
+                    defaultValue={proxyBase()}
+                    placeholder={DEFAULT_PROXY}
+                    onChange={(e) => setProxyBase(e.target.value)}
+                    className="input mt-2 font-mono !text-[12px]"
+                  />
+                  <button
+                    onClick={async () => {
+                      const h = await proxyHealth();
+                      if (h.ok) toast("ok", "Motor hazır", `yt-dlp ${h.ytdlp || ""}`);
+                      else toast("err", "Motora ulaşılamadı", h.detail || "adres yanlış olabilir");
+                    }}
+                    className="btn-outline mt-2 !py-1.5 !text-[11.5px]"
+                  >
+                    Motoru test et
+                  </button>
+                </div>
+              )}
               {inAndroidShell() && (
                 <div className="rounded-xl border border-teal-400/25 bg-teal-400/[0.05] p-3">
                   <p className="text-[12px] font-semibold text-teal-200">Yerel sunucu (tam güç: FFmpeg + kuyruk)</p>

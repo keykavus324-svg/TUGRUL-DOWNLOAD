@@ -1,9 +1,11 @@
 {
   "name": "tugrul-download",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "TUĞRUL DOWNLOAD — yt-dlp destekli, AAA kalitede video/ses indirme stüdyosu",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "setup": "npm install --silent && npm --prefix frontend install --silent && pip install -r backend/requirements.txt",
     "build": "npm --prefix frontend run build",
@@ -16,5 +18,8 @@
     "apk:release": "bash scripts/build-apk.sh release",
     "docker:build": "docker build -t tugrul-download .",
     "docker:run": "docker run --rm -p 8000:8000 -v \"$PWD/downloads:/app/downloads\" tugrul-download"
+  },
+  "dependencies": {
+    "java-parser": "^3.0.1"
   }
 }

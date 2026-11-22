@@ -63,6 +63,10 @@ jobs:
         working-directory: frontend
         run: node proxy-download-test.mjs
 
+      - name: Cihaz içi motor testi (APK yolu — sunucusuz, dış ağ kapalı)
+        working-directory: frontend
+        run: node native-download-test.mjs
+
       - name: Statik derleme (çevrimdışı motor)
         working-directory: frontend
         run: npx vite build --mode ghpages

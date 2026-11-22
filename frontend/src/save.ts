@@ -6,6 +6,7 @@
  * `<a download>` desteklemediği için bu adım zorunludur.
  */
 import { inAndroidShell } from "./engine";
+import { deviceFilePath } from "./native";
 
 export const FOLDER = "TUGRUL DOWNLOAD";
 
@@ -101,6 +102,9 @@ async function fetchBlob(url: string): Promise<Blob> {
 
 /** İndirilmiş kaydı API'den çekip cihaza kaydeder. */
 export async function saveDownload(id: number, fallbackName: string): Promise<SaveResult> {
+  // APK: dosya zaten Download/TUGRUL DOWNLOAD klasöründe — ikinci kopya gereksiz
+  const local = deviceFilePath(id);
+  if (local) return { ok: true, path: local, native: true, message: `Dosya cihazda: ${local.split("/").pop()}` };
   return saveBlob(await fetchBlob(`/api/downloads/${id}/file`), fallbackName);
 }
 

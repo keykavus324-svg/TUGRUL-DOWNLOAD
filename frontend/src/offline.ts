@@ -8,6 +8,8 @@
  */
 
 import { proxyBase, proxyDownload, proxyHealth, proxyInfo, type PartialFile } from "./proxy";
+import { inAndroidShell } from "./engine";
+import { markDeviceFile, nativeInfo, probeNative, Ytdlp, type NativeProgress } from "./native";
 
 type Status = "queued" | "downloading" | "processing" | "paused" | "completed" | "failed" | "canceled";
 
@@ -172,6 +174,10 @@ async function restoreState() {
     try {
       const data = JSON.parse(raw) as State;
       state = { ...state, ...data, settings: { ...DEFAULT_SETTINGS, ...(data.settings || {}) } };
+      // APK'da diske yazılmış dosyaların yolunu yeniden işaretle
+      for (const d of state.downloads || []) {
+        if (d.filepath && d.filepath.startsWith("/")) markDeviceFile(d.id, d.filepath);
+      }
       state.downloads = (state.downloads || []).map((d) =>
         ["downloading", "processing", "queued"].includes(d.status)
           ? { ...d, status: "paused" as Status, speed: "", eta: "" }
@@ -327,6 +333,8 @@ type Task = {
   paused: boolean;
   canceled: boolean;
   abort?: AbortController;
+  /** APK'da cihaz içi yt-dlp süreciyle yürüyor */
+  native?: boolean;
 };
 const tasks = new Map<number, Task>();
 
@@ -415,6 +423,139 @@ function finishTask(id: number, s: (typeof DEMO)[number]) {
   log("info", `Tamamlandı #${id}`);
   persist();
   emit("completed", { id, item: row });
+}
+
+// --- APK: cihaz içi yt-dlp motoru -----------------------------------------
+let nativeOk = false;
+
+/** APK'da cihaz içi yt-dlp kullanılabilir mi? (tarayıcıda her zaman false) */
+export async function nativeAvailable(): Promise<boolean> {
+  if (nativeOk) return true;
+  if (!inAndroidShell()) return false;
+  nativeOk = await probeNative();
+  return nativeOk;
+}
+
+/** Satır için doğru yürütücüyü seçer: demo → örnek, APK → cihaz, değilse proxy. */
+function startRow(id: number) {
+  const row = state.downloads.find((d) => d.id === id);
+  if (!row) return;
+  if (isDemoUrl(row.url)) {
+    runTask(id);
+    return;
+  }
+  void (async () => {
+    if (await nativeAvailable()) await runNativeTask(id);
+    else await runRealTask(id);
+  })();
+}
+
+const progressSub = new Map<number, (p: NativeProgress) => void>();
+let progressHooked = false;
+
+function hookProgress() {
+  if (progressHooked) return;
+  progressHooked = true;
+  Ytdlp.addListener("progress", (p: NativeProgress) => progressSub.get(Number(p.id))?.(p)).catch(() => {
+    progressHooked = false;
+  });
+}
+
+/**
+ * APK'da gerçek indirme: yt-dlp telefonun içinde çalışır (YTDLnis yaklaşımı),
+ * dosya doğrudan Download/TUGRUL DOWNLOAD klasörüne yazılır — sunucu gerekmez.
+ */
+async function runNativeTask(id: number) {
+  const row = state.downloads.find((d) => d.id === id);
+  if (!row) return;
+  const task: Task = { timer: null, paused: false, canceled: false, native: true };
+  tasks.set(id, task);
+
+  hookProgress();
+  progressSub.set(id, (p) => {
+    if (task.canceled) return;
+    if (p.progress > 0) row.progress = Math.min(99.9, Math.round(p.progress * 10) / 10);
+    if (p.eta > 0) row.eta = `${p.eta} sn`;
+    const line = (p.line || "").trim();
+    if (line) row.speed = line.split(/\s+/).slice(0, 3).join(" ");
+    persist();
+    emit("progress", { id, progress: row.progress, speed: row.speed, eta: row.eta, downloaded: 0, total: 0 });
+  });
+
+  row.status = "downloading";
+  row.progress = 0;
+  row.error = "";
+  emit("started", { item: row });
+  log("info", `Başladı #${id}: ${row.title || row.url} (cihaz içi yt-dlp)`);
+  persist();
+
+  // Satır bilgisi eksikse cihazdaki yt-dlp ile tamamla (indirmeyi bekletmez)
+  if (!row.title || !row.thumbnail) {
+    nativeInfo(row.url)
+      .then((m) => {
+        if (task.canceled) return;
+        row.title = m.title || row.title;
+        row.thumbnail = m.thumbnail || row.thumbnail || "";
+        row.uploader = m.uploader || row.uploader;
+        row.duration = m.duration || row.duration;
+        persist();
+        emit("updated", { id, item: row });
+      })
+      .catch(() => {});
+  }
+
+  const cleanup = () => {
+    progressSub.delete(id);
+    tasks.delete(id);
+  };
+
+  try {
+    const res = await Ytdlp.download({
+      id: String(id),
+      url: row.url,
+      type: row.dl_type,
+      format: row.format_id && row.format_id !== "best" ? row.format_id : "",
+      template: "%(title).120B.%(ext)s",
+    });
+    cleanup();
+    if (task.canceled || task.paused) {
+      row.status = "paused";
+      row.speed = "";
+      row.eta = "";
+      persist();
+      emit("paused", { id });
+      return;
+    }
+    if (!res.ok) throw new Error(res.stderr || `İndirme başarısız (kod ${res.exitCode})`);
+    row.status = "completed";
+    row.progress = 100;
+    row.speed = "";
+    row.eta = "";
+    row.finished_at = now();
+    row.filepath = res.path || `TUĞRUL DOWNLOAD/${row.title}`;
+    row.filesize = res.size || 0;
+    markDeviceFile(id, res.path || ""); // dosya zaten cihazda — ek kayıt gerekmez
+    log("info", `Tamamlandı #${id} → ${row.filepath}`);
+    persist();
+    emit("completed", { id, item: row });
+  } catch (e) {
+    cleanup();
+    if (task.canceled || task.paused) {
+      row.status = "paused";
+      row.speed = "";
+      row.eta = "";
+      persist();
+      emit("paused", { id });
+      return;
+    }
+    row.status = "failed";
+    row.speed = "";
+    row.eta = "";
+    row.error = (e as Error).message || "İndirme başarısız.";
+    log("error", `Başarısız #${id}: ${row.error}`);
+    persist();
+    emit("failed", { id, item: row });
+  }
 }
 
 /**
@@ -544,23 +685,25 @@ async function router(method: string, path: string, body: any): Promise<Response
   const [route, qs] = path.split("?");
   const q = new URLSearchParams(qs || "");
 
-  if (route === "/api/health")
+  if (route === "/api/health") {
+    const onDevice = await nativeAvailable();
     return json({
       ok: true,
       version: "1.0.0",
-      ytdlp: "proxy (yt-dlp)",
-      ffmpeg: false,
+      ytdlp: onDevice ? "cihaz içi yt-dlp" : "proxy (yt-dlp)",
+      ffmpeg: onDevice,
       ffmpeg_path: "",
       disk_free: 0,
       disk_total: 0,
       demo: false,
-      mode: "proxy",
-      engine: "proxy",
-      proxy: proxyBase(),
+      mode: onDevice ? "device" : "proxy",
+      engine: onDevice ? "device" : "proxy",
+      proxy: onDevice ? "" : proxyBase(),
       active: state.downloads.filter((d) => d.status === "downloading" || d.status === "processing").length,
       queue: state.downloads.filter((d) => d.status === "queued").length,
       time: now(),
     });
+  }
 
   if (route === "/api/settings" && method === "GET") return json(state.settings);
   if (route === "/api/settings" && method === "PUT") {
@@ -585,6 +728,7 @@ async function router(method: string, path: string, body: any): Promise<Response
     if (isDemoUrl(url)) return json(demoInfo(url));
     if (!url.trim()) return json({ detail: "Bağlantı boş" }, 400);
     try {
+      if (await nativeAvailable()) return json(await nativeInfo(url.trim()));
       return json(await proxyInfo(url.trim()));
     } catch (e) {
       return json({ detail: (e as Error).message || "Bağlantı çözülemedi" }, 422);
@@ -646,9 +790,9 @@ async function router(method: string, path: string, body: any): Promise<Response
     state.downloads.unshift(row);
     persist();
     emit("queued", { item: row });
-    // demo bağlantıları örnek medyayla simüle edilir, gerçek adresler proxy'ye gider
-    if (isDemoUrl(row.url)) window.setTimeout(() => runTask(row.id), 350);
-    else window.setTimeout(() => runRealTask(row.id), 0);
+    // demo bağlantıları örnek medyayla simüle edilir; gerçek adresler
+    // APK'da cihaz içi yt-dlp ile, tarayıcıda proxy ile iner
+    window.setTimeout(() => startRow(row.id), isDemoUrl(row.url) ? 350 : 0);
     return json({ duplicate: false, item: row });
   }
 
@@ -680,6 +824,7 @@ async function router(method: string, path: string, body: any): Promise<Response
     if (action === "pause") {
       const t = tasks.get(id);
       if (t) t.paused = true;
+      if (t?.native) void Ytdlp.cancel({ id: String(id) }); // cihaz içi süreç durdurulur
       if (t?.abort) t.abort.abort(); // gerçek indirme kaldığı yerden sürdürülebilir
       row.status = "paused";
       row.speed = "";
@@ -695,7 +840,7 @@ async function router(method: string, path: string, body: any): Promise<Response
         row.status = "downloading";
       } else {
         row.status = "queued";
-        window.setTimeout(() => (isDemoUrl(row.url) ? runTask(id) : runRealTask(id)), 250);
+        window.setTimeout(() => startRow(id), 250);
       }
       persist();
       return json(row);
@@ -704,6 +849,7 @@ async function router(method: string, path: string, body: any): Promise<Response
       const t = tasks.get(id);
       if (t?.timer) window.clearInterval(t.timer);
       if (t) t.canceled = true;
+      if (t?.native) void Ytdlp.cancel({ id: String(id) });
       t?.abort?.abort();
       tasks.delete(id);
       partials.delete(id);
@@ -720,7 +866,7 @@ async function router(method: string, path: string, body: any): Promise<Response
       row.progress = 0;
       row.error = "";
       persist();
-      window.setTimeout(() => (isDemoUrl(row.url) ? runTask(id) : runRealTask(id)), 250);
+      window.setTimeout(() => startRow(id), 250);
       return json(row);
     }
     if (action === "file") {

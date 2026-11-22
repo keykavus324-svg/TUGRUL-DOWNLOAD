@@ -7,6 +7,8 @@
  * ayarlar, şablonlar, zamanlama, izleme listesi, yedekleme ve demo medya üretimi.
  */
 
+import { proxyBase, proxyDownload, proxyHealth, proxyInfo, type PartialFile } from "./proxy";
+
 type Status = "queued" | "downloading" | "processing" | "paused" | "completed" | "failed" | "canceled";
 
 type Row = {
@@ -284,8 +286,7 @@ function demoInfo(url: string) {
   return {
     id: s.id,
     title: s.title,
-    description:
-      "Bu bir demo içeriktir. Gerçek sitelerden indirme için sunucu modunda çalıştırın: bash scripts/start.sh",
+    description: "Örnek içerik — arayüzü denemek için. Gerçek bir bağlantı yapıştırdığınızda doğrudan indirilir.",
     thumbnail: s.thumb ? fileUrl(s.thumb) : null,
     uploader: s.uploader,
     uploader_url: "",
@@ -321,8 +322,26 @@ function demoInfo(url: string) {
 }
 
 // --- indirme yürütücüsü ----------------------------------------------------
-type Task = { timer: number | null; paused: boolean; canceled: boolean };
+type Task = {
+  timer: number | null;
+  paused: boolean;
+  canceled: boolean;
+  abort?: AbortController;
+};
 const tasks = new Map<number, Task>();
+
+/** Gerçek indirmelerin bitmiş dosyaları (kaydedilene kadar bellekte). */
+const blobs = new Map<number, Blob>();
+/** Duraklatılmış gerçek indirmelerin yarım parçaları — devam ettirmek için. */
+const partials = new Map<number, PartialFile>();
+
+const isDemoUrl = (url: string) => (url || "").startsWith("demo://");
+const safeName = (name: string) =>
+  name
+    .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 160) || "indirme";
 
 function emit(type: string, payload: Record<string, unknown>) {
   (window as unknown as { __tugrulEmit__?: (e: unknown) => void }).__tugrulEmit__?.({ type, ...payload });
@@ -398,20 +417,130 @@ function finishTask(id: number, s: (typeof DEMO)[number]) {
   emit("completed", { id, item: row });
 }
 
+/**
+ * Gerçek indirme — proxy API üzerinden parça parça çekilir.
+ * İlerleme gerçek bayt sayısından gelir; duraklat/devam kaldığı yerden sürer.
+ */
+async function runRealTask(id: number) {
+  const row = state.downloads.find((d) => d.id === id);
+  if (!row) return;
+  const task: Task = { timer: null, paused: false, canceled: false, abort: new AbortController() };
+  tasks.set(id, task);
+
+  row.status = "downloading";
+  row.error = "";
+  if (!partials.has(id)) row.progress = 0;
+  emit("started", { item: row });
+  log("info", `Başladı #${id}: ${row.title || row.url}`);
+  persist();
+
+  try {
+    const health = await proxyHealth(8000);
+    if (!health.ok) throw new Error(`İndirme motoruna ulaşılamadı (${health.detail || "bağlantı yok"})`);
+    const formatId =
+      row.format_id || (row.dl_type === "audio" ? "bestaudio" : "");
+    const done = await proxyDownload({
+      url: row.url,
+      formatId,
+      chunk: health.chunk,
+      signal: task.abort!.signal,
+      initial: partials.get(id),
+      onProgress: (p) => {
+        if (task.canceled || task.paused) return;
+        row.progress = p.total
+          ? Math.min(99.5, Math.round((p.downloaded / p.total) * 1000) / 10)
+          : 0;
+        row.speed = speedText(p.speed);
+        row.eta = p.speed > 0 && p.total > p.downloaded ? clock((p.total - p.downloaded) / p.speed) : "";
+        persist();
+        emit("progress", {
+          id,
+          progress: row.progress,
+          speed: row.speed,
+          eta: row.eta,
+          downloaded: p.downloaded,
+          total: p.total,
+        });
+      },
+    });
+
+    if (task.canceled) return;
+    partials.delete(id);
+    blobs.set(id, done.blob);
+    if (!row.title || row.title === row.url) row.title = done.title || row.url;
+    row.filepath = `TUĞRUL DOWNLOAD/${safeName(`${done.title || row.title || "indirme"}.${done.ext}`)}`;
+    row.filesize = done.size;
+    row.status = "completed";
+    row.progress = 100;
+    row.speed = "";
+    row.eta = "";
+    row.finished_at = now();
+    log("info", `Tamamlandı #${id} (${done.size} bayt)`);
+    persist();
+    emit("completed", { id, item: row });
+  } catch (e) {
+    if (task.canceled) return;
+    const message = (e as Error).message || "İndirme başarısız";
+    if (task.paused) {
+      row.status = "paused";
+      row.speed = "";
+      row.eta = "";
+      persist();
+      emit("paused", { id });
+      return;
+    }
+    row.status = "failed";
+    row.error = message;
+    row.speed = "";
+    row.eta = "";
+    log("error", `Başarısız #${id}: ${message}`);
+    persist();
+    emit("failed", { id, item: row, error: message });
+  } finally {
+    tasks.delete(id);
+  }
+}
+
 // --- statik arayüz yolları -------------------------------------------------
+/** Bitmiş gerçek dosyayı indirilebilir yanıt olarak döndürür. */
+function blobResponse(blob: Blob, name: string) {
+  const file = safeName(name.split("/").pop() || "indirme");
+  return new Response(blob, {
+    status: 200,
+    headers: {
+      "Content-Type": blob.type || "application/octet-stream",
+      "Content-Length": String(blob.size),
+      "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(file)}`,
+    },
+  });
+}
+
+const extOf = (d: Row) => {
+  const fromPath = (d.filepath || "").split(".").pop()?.toLowerCase() || "";
+  if (fromPath && fromPath.length <= 5) return fromPath;
+  return d.dl_type === "audio" ? "mp3" : "mp4";
+};
+
 function fileList(): { name: string; path: string; size: number; mtime: number; ext: string }[] {
   return state.downloads
     .filter((d) => d.status === "completed")
-    .map((d) => ({
-      name: `${d.title || sampleOf(d.url).title}.${d.dl_type === "audio" ? "mp3" : "mp4"}`,
-      path: fileUrl(sampleOf(d.url).file),
-      size: d.filesize,
-      mtime: d.finished_at || d.created_at,
-      ext: d.dl_type === "audio" ? "mp3" : "mp4",
-    }));
+    .map((d) => {
+      const ext = extOf(d);
+      const name = d.filepath
+        ? d.filepath.split("/").pop() || `${d.title || "indirme"}.${ext}`
+        : `${d.title || sampleOf(d.url).title}.${ext}`;
+      return {
+        name,
+        // gerçek dosyalar bellekte tutulur; sanal yol ile adreslenir
+        path: isDemoUrl(d.url) ? fileUrl(sampleOf(d.url).file) : `tugrul://${d.id}/${name}`,
+        size: d.filesize,
+        mtime: d.finished_at || d.created_at,
+        ext,
+      };
+    });
 }
 
-function router(method: string, path: string, body: any) {
+async function router(method: string, path: string, body: any): Promise<Response> {
   const [route, qs] = path.split("?");
   const q = new URLSearchParams(qs || "");
 
@@ -419,13 +548,15 @@ function router(method: string, path: string, body: any) {
     return json({
       ok: true,
       version: "1.0.0",
-      ytdlp: "çevrimdışı",
+      ytdlp: "proxy (yt-dlp)",
       ffmpeg: false,
       ffmpeg_path: "",
       disk_free: 0,
       disk_total: 0,
-      demo: true,
-      mode: "offline",
+      demo: false,
+      mode: "proxy",
+      engine: "proxy",
+      proxy: proxyBase(),
       active: state.downloads.filter((d) => d.status === "downloading" || d.status === "processing").length,
       queue: state.downloads.filter((d) => d.status === "queued").length,
       time: now(),
@@ -451,15 +582,13 @@ function router(method: string, path: string, body: any) {
 
   if (route === "/api/info" && method === "POST") {
     const url: string = body?.url || "";
-    if (!url.startsWith("demo://"))
-      return json(
-        {
-          detail:
-            "Çevrimdışı moddasınız. Gerçek indirmeler için sunucuyu çalıştırın (bash scripts/start.sh) ya da APK'yı yerel motorla kullanın. Demo bağlantıları: demo://demo001 … demo004",
-        },
-        422
-      );
-    return json(demoInfo(url));
+    if (isDemoUrl(url)) return json(demoInfo(url));
+    if (!url.trim()) return json({ detail: "Bağlantı boş" }, 400);
+    try {
+      return json(await proxyInfo(url.trim()));
+    } catch (e) {
+      return json({ detail: (e as Error).message || "Bağlantı çözülemedi" }, 422);
+    }
   }
 
   if (route === "/api/search" && method === "POST") {
@@ -492,11 +621,12 @@ function router(method: string, path: string, body: any) {
 
   if (route === "/api/downloads" && method === "POST") {
     const d = body || {};
+    const demo = isDemoUrl(d.url);
     const row: Row = {
       id: state.seq++,
       url: d.url,
-      title: d.title || sampleOf(d.url).title,
-      thumbnail: d.thumbnail || (sampleOf(d.url).thumb ? fileUrl(sampleOf(d.url).thumb) : ""),
+      title: d.title || (demo ? sampleOf(d.url).title : d.url),
+      thumbnail: d.thumbnail || (demo && sampleOf(d.url).thumb ? fileUrl(sampleOf(d.url).thumb) : ""),
       uploader: d.uploader || "",
       duration: d.duration || 0,
       dl_type: d.dl_type === "audio" ? "audio" : "video",
@@ -516,14 +646,16 @@ function router(method: string, path: string, body: any) {
     state.downloads.unshift(row);
     persist();
     emit("queued", { item: row });
-    window.setTimeout(() => runTask(row.id), 350);
+    // demo bağlantıları örnek medyayla simüle edilir, gerçek adresler proxy'ye gider
+    if (isDemoUrl(row.url)) window.setTimeout(() => runTask(row.id), 350);
+    else window.setTimeout(() => runRealTask(row.id), 0);
     return json({ duplicate: false, item: row });
   }
 
   if (route === "/api/downloads/bulk" && method === "POST") {
     const items = (body?.items || []).slice(0, 500);
     for (const it of items) {
-      router("POST", "/api/downloads", it);
+      await router("POST", "/api/downloads", it);
     }
     return json({ count: items.length, items: [] });
   }
@@ -540,14 +672,18 @@ function router(method: string, path: string, body: any) {
       if (t) t.canceled = true;
       tasks.delete(id);
       state.downloads = state.downloads.filter((d) => d.id !== id);
+      blobs.delete(id);
+      partials.delete(id);
       persist();
       return json({ ok: true });
     }
     if (action === "pause") {
       const t = tasks.get(id);
       if (t) t.paused = true;
+      if (t?.abort) t.abort.abort(); // gerçek indirme kaldığı yerden sürdürülebilir
       row.status = "paused";
       row.speed = "";
+      row.eta = "";
       persist();
       emit("paused", { id });
       return json(row);
@@ -559,7 +695,7 @@ function router(method: string, path: string, body: any) {
         row.status = "downloading";
       } else {
         row.status = "queued";
-        window.setTimeout(() => runTask(id), 250);
+        window.setTimeout(() => (isDemoUrl(row.url) ? runTask(id) : runRealTask(id)), 250);
       }
       persist();
       return json(row);
@@ -568,7 +704,10 @@ function router(method: string, path: string, body: any) {
       const t = tasks.get(id);
       if (t?.timer) window.clearInterval(t.timer);
       if (t) t.canceled = true;
+      t?.abort?.abort();
       tasks.delete(id);
+      partials.delete(id);
+      blobs.delete(id);
       row.status = "canceled";
       row.speed = "";
       persist();
@@ -576,14 +715,17 @@ function router(method: string, path: string, body: any) {
       return json(row);
     }
     if (action === "retry") {
+      partials.delete(id);
       row.status = "queued";
       row.progress = 0;
       row.error = "";
       persist();
-      window.setTimeout(() => runTask(id), 250);
+      window.setTimeout(() => (isDemoUrl(row.url) ? runTask(id) : runRealTask(id)), 250);
       return json(row);
     }
     if (action === "file") {
+      const blob = blobs.get(id);
+      if (blob) return blobResponse(blob, row.filepath || `${row.title || "indirme"}`);
       const s = sampleOf(row.url);
       return new Response(null, { status: 302, headers: { Location: fileUrl(s.file) } });
     }
@@ -604,12 +746,26 @@ function router(method: string, path: string, body: any) {
   if (route === "/api/files" && method === "GET") return json({ dir: state.settings.download_dir, items: fileList() });
   if (route === "/api/files" && method === "DELETE") {
     const p = q.get("path") || "";
-    state.downloads = state.downloads.filter((d) => !p.endsWith(sampleOf(d.url).file));
+    const virt = p.match(/^tugrul:\/\/(\d+)\//);
+    state.downloads = state.downloads.filter(
+      (d) => !(virt ? d.id === Number(virt[1]) : p.endsWith(sampleOf(d.url).file))
+    );
+    if (virt) {
+      blobs.delete(Number(virt[1]));
+      partials.delete(Number(virt[1]));
+    }
     persist();
     return json({ ok: true });
   }
   if (route === "/api/files/raw") {
     const p = q.get("path") || "";
+    const virt = p.match(/^tugrul:\/\/(\d+)\//);
+    if (virt) {
+      const id = Number(virt[1]);
+      const blob = blobs.get(id);
+      if (blob) return blobResponse(blob, p);
+      return json({ detail: "Dosya bu oturumda değil — tekrar indirin." }, 410);
+    }
     const s = DEMO.find((d) => p.endsWith(d.file)) || DEMO[0];
     return new Response(null, { status: 302, headers: { Location: fileUrl(s.file) } });
   }
@@ -705,7 +861,7 @@ function router(method: string, path: string, body: any) {
     return json(
       {
         detail:
-          "Medya araçları (kes, kırp, dönüştür) sunucu tarafında FFmpeg ile çalışır. Çevrimdışı modda devre dışı — `bash scripts/start.sh` ile tam sürümü kullanın.",
+          "Medya araçları (kes, kırp, dönüştür) FFmpeg gerektirir ve tam sürümde (bash scripts/start.sh) çalışır.",
       },
       501
     );
@@ -804,7 +960,7 @@ export function startOfflineScheduler() {
     for (const s of state.scheduled) {
       if (s.status === "pending" && s.run_at <= t) {
         s.status = "done";
-        router("POST", "/api/downloads", {
+        void router("POST", "/api/downloads", {
           url: s.url,
           dl_type: s.dl_type,
           format_id: s.format_id,

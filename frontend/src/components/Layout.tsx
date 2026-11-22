@@ -152,9 +152,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Menu className="h-4 w-4" />
             </button>
             {isOffline() ? (
-              <div className="flex items-center gap-2 rounded-full border border-amber-400/25 bg-amber-400/[0.08] px-3 py-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-amber-300" />
-                <span className="text-[11px] font-medium text-amber-200">Demo modu</span>
+              <div className="flex items-center gap-2 rounded-full border border-teal-400/25 bg-teal-400/[0.08] px-3 py-1.5">
+                <Sparkles className="h-3.5 w-3.5 text-teal-300" />
+                <span className="text-[11px] font-medium text-teal-200">yt-dlp · bulut motor</span>
               </div>
             ) : (
               <div className="hidden items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 sm:flex">

@@ -26,9 +26,10 @@ Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, ar
 > adresinde yayında (kaynak: `gh-pages` dalı, HTTPS zorunlu). APK ve sunucu paketi
 > **[Releases](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** sayfasında.
 >
-> **İki çalışma modu.** Statik sürüm (Pages/APK) cihaz içi motorla kuyruk, kalıcılık ve
-> demo medya üretimini çalıştırır — arayüzün tamamı canlıdır. Gerçek sitelerden indirme,
-> FFmpeg stüdyosu ve toplu işler için Python sunucusunu çalıştırın: `bash scripts/start.sh`.
+> **Bağlantıyı yapıştırın, indirme başlasın.** Statik sürüm (Pages/APK) bağlantıyı
+> sunucusuz **yt-dlp proxy** ucuna (`vercel-api/`) gönderir; dosya parça parça cihaza iner
+> ve tek dokunuşla kaydedilir. Kuyruk, ilerleme, duraklat/devam ve kalıcılık cihazda çalışır.
+> FFmpeg stüdyosu ve toplu işler için tam sürümü çalıştırın: `bash scripts/start.sh`.
 
 
 ## Neden TUĞRUL?
@@ -84,7 +85,7 @@ Ayrıntılar ve iki çalışma modu: [docs/ANDROID.md](docs/ANDROID.md).
 ### Statik yayın (GitHub Pages)
 
 `main` dalına her push'ta `.github/workflows/pages.yml` arayüzü `--mode ghpages`
-(çevrimdışı motor) ile derler ve Pages'e yayınlar:
+ile derler, **gerçek indirme akışını test eder** ve Pages'e yayınlar:
 <https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/>
 
 ```bash
@@ -181,16 +182,41 @@ yedek al/geri yükle.
 
 ---
 
-## Çevrimdışı motor (Pages / APK)
+## İndirme motoru (Pages / APK)
 
-`frontend/src/offline.ts`, `/api/*` çağrılarını yakalayan bir _sanal sunucudur_:
-kuyruk, ilerleme, duraklat/devam, kalıcılık (IndexedDB), ayarlar, şablonlar,
-zamanlama, izleme listesi, yedekleme ve demo medya üretimi tarayıcıda çalışır.
-Böylece GitHub Pages ve APK aynı arayüzü, aynı kod yoluyla sunar; sunucu
-bulunduğunda ise istekler gerçek API'ye gider.
+İki katman birlikte çalışır:
 
-APK'da **Ayarlar → Bağlı sunucu** alanına `http://<bilgisayar-ip>:8000` yazarsanız
-telefon, kendi ağınızdaki gerçek yt-dlp motoruna bağlanır.
+* **Cihaz katmanı** — `frontend/src/offline.ts`, `/api/*` çağrılarını yakalayan bir
+  _sanal sunucudur_: kuyruk, ilerleme, duraklat/devam, kalıcılık (IndexedDB), ayarlar,
+  şablonlar, zamanlama, izleme listesi ve yedekleme tarayıcıda/WebView'da çalışır.
+* **Motor katmanı** — `frontend/src/proxy.ts`, gerçek indirmeyi sunucusuz yt-dlp
+  ucundan yapar:
+
+  ```
+  POST /api/info     bağlantıyı çözer (başlık, süre, formatlar)
+  POST /api/resolve  seçilen akış için imzalı doğrudan adres üretir
+  GET  /api/stream   imzalı adresten bayt aralığı (parça parça, ~1.5 MB)
+  GET  /api/health   motor durumu     GET /api/probe  tek istekte uçtan uca test
+  ```
+
+  Dosya tarayıcıda birleştirilip Blob olarak kaydedilir. Belirteçler HMAC ile
+  imzalıdır ve hedef adres izin listesiyle sınırlıdır — uç açık bir proxy değildir.
+
+Ortak uç: `https://tugrul-run-tugrul1.vercel.app/api/index` (Ayarlar → **İndirme motoru**
+alanından değiştirilebilir). Kendi ucunuzu yayınlayın:
+
+```bash
+cd vercel-api && vercel deploy --prod          # ya da vercel-api/ klasörünü Vercel'e taşıyın
+# çerez gerektiren siteler için:  vercel env add YTDLP_COOKIES_B64
+```
+
+> **Vercel notu.** Proje ayarlarındaki _Deployment Protection_ açıkken `*.vercel.app`
+> adresleri Vercel girişi ister ve uygulama motora ulaşamaz. **Project Settings →
+> Deployment Protection → "Only Preview Deployments"** yapın. Doğrulama:
+> `https://<projeniz>.vercel.app/api/index/api/probe?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ`
+
+APK'da **Ayarlar → Yerel sunucu** alanına `http://<bilgisayar-ip>:8000` yazarsanız
+telefon, kendi ağınızdaki tam sürüme (FFmpeg dahil) bağlanır; boşsa proxy ucu kullanılır.
 
 ## Demo modu (ağ kısıtlı ortamlar)
 

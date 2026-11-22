@@ -87,13 +87,13 @@ const dbg = await (await window.fetch("/api/health")).json();
 console.log("motor:", dbg.mode);
 console.log("metin:", JSON.stringify(container.textContent?.slice(0, 500)));
 console.log("ana sayfa:", text().length, "karakter;", /TUĞRUL/.test(text()) ? "marka ✓" : "marka ✗");
-const input = container.querySelector('input[placeholder*="demo://"]');
+const input = container.querySelector('input[placeholder*="Bağlantıyı yapıştırın"]');
 console.log("URL alanı:", !!input, "| örnek kartlar:", container.querySelectorAll('button').length);
 
 // demo indirme akışını arayüz üzerinden başlat: hızlı çubuk (her sayfada) + Enter
 const inputEl =
   container.querySelector('input[placeholder^="Hızlı indir"]') ||
-  container.querySelector('input[placeholder*="demo://"]');
+  container.querySelector('input[placeholder*="Bağlantıyı yapıştırın"]');
 const setter = Object.getOwnPropertyDescriptor(dom.window.HTMLInputElement.prototype, "value").set;
 await act(async () => {
   setter.call(inputEl, "demo://demo002");

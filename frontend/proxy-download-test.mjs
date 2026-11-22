@@ -183,6 +183,21 @@ class SsePolyfill {
 globalThis.EventSource = SsePolyfill;
 dom.window.EventSource = SsePolyfill;
 dom.window.matchMedia = () => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
+// modül Node globalindeki URL'i kullanır → oraya ve jsdom'un anchor'ına kanca tak
+const saved = [];
+const clicked = [];
+const origCreate = globalThis.URL.createObjectURL?.bind(globalThis.URL);
+globalThis.URL.createObjectURL = (b) => {
+  saved.push({ size: b.size, type: b.type });
+  return "blob:tugrul-test";
+};
+globalThis.URL.revokeObjectURL = () => {};
+dom.window.URL.createObjectURL = globalThis.URL.createObjectURL;
+dom.window.URL.revokeObjectURL = globalThis.URL.revokeObjectURL;
+// jsdom "navigation" desteklemez → tıklamayı kaydet
+dom.window.HTMLAnchorElement.prototype.click = function () {
+  clicked.push({ download: this.download, href: this.href });
+};
 dom.window.scrollTo = () => {};
 dom.window.Element.prototype.scrollIntoView = () => {};
 
@@ -281,6 +296,36 @@ const fileRes = await window.fetch(`/api/downloads/${done?.id}/file`);
 const buf = Buffer.from(await fileRes.arrayBuffer());
 ok(buf.length === source.length, "kaydedilen dosya boyu", String(buf.length));
 ok(buf.equals(source), "baytlar kaynakla birebir aynı");
+
+// --- 6) tamamlanan satırdan cihaza kaydet --------------------------------
+await act(async () => {
+  window.location.hash = "#/queue";
+  window.dispatchEvent(new dom.window.HashChangeEvent("hashchange"));
+  await new Promise((r) => setTimeout(r, 400));
+});
+// tamamlananlar "Tüm kayıtlar" sekmesinde görünür
+const allTab = [...container.querySelectorAll("button")].find((b) => /Tüm kayıtlar/.test(b.textContent || ""));
+ok(!!allTab, "'Tüm kayıtlar' sekmesi bulundu");
+if (allTab) {
+  await act(async () => {
+    allTab.click();
+    await new Promise((r) => setTimeout(r, 300));
+  });
+}
+const saveBtn = container.querySelector('button[title="Cihaza kaydet"]');
+ok(!!saveBtn, "tamamlanan satırda 'Cihaza kaydet' düğmesi var");
+if (saveBtn) {
+  await act(async () => {
+    saveBtn.click();
+    await new Promise((r) => setTimeout(r, 600));
+  });
+  ok(saved.length === 1, "kaydet düğmesi dosyayı Blob olarak aldı", JSON.stringify(saved));
+  ok(saved[0]?.size === source.length, "kaydedilen Blob boyu doğru", String(saved[0]?.size));
+  ok(saved[0]?.type === "video/mp4", "MIME doğru", String(saved[0]?.type));
+  ok(clicked.length === 1 && clicked[0].download, "tarayıcıda indirme tetiklendi (a[download])", JSON.stringify(clicked));
+  ok(!/Kaydedilemedi/.test(container.textContent || ""), "kayıt hatası gösterilmedi");
+  if (origCreate) globalThis.URL.createObjectURL = origCreate;
+}
 
 ok(errors.length === 0, "React hatası yok", errors.slice(0, 3).join(" | "));
 

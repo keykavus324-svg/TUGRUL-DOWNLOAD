@@ -17,6 +17,7 @@ import {
 import DownloadRow from "../components/DownloadRow";
 import { Link } from "react-router-dom";
 import { api, ago, bytes } from "../lib";
+import { saveFileByPath } from "../save";
 import { useApp } from "../store";
 import type { Download, FileItem, Stats } from "../types";
 
@@ -52,6 +53,17 @@ export default function Library() {
     if (q && !`${d.title} ${d.uploader} ${d.url}`.toLowerCase().includes(q.toLowerCase())) return false;
     return true;
   });
+
+  /** Dosyayı cihaza kaydeder (APK'da diske, tarayıcıda İndirilenler'e). */
+  async function saveFile(path: string, name: string) {
+    try {
+      const res = await saveFileByPath(path, name || path);
+      if (res.ok) toast("ok", res.native ? "Cihaza kaydedildi" : "İndirildi", res.path);
+      else toast("err", "Kaydedilemedi", res.message);
+    } catch (e) {
+      toast("err", "Kaydedilemedi", (e as Error).message);
+    }
+  }
 
   async function removeFile(path: string) {
     try {
@@ -173,9 +185,9 @@ export default function Library() {
                 <Link to="/studio" className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-white/5 hover:text-gold-300" title="Stüdyoda aç">
                   <Scissors className="h-4 w-4" />
                 </Link>
-                <a href={`/api/files/raw?path=${encodeURIComponent(f.path)}`} download className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-white/5 hover:text-emerald-300" title="İndir">
+                <button onClick={() => saveFile(f.path, f.name)} className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-white/5 hover:text-emerald-300" title="Cihaza kaydet">
                   <DownloadIcon className="h-4 w-4" />
-                </a>
+                </button>
                 <button onClick={() => removeFile(f.path)} className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-rose-500/10 hover:text-rose-300" title="Sil">
                   <Trash2 className="h-4 w-4" />
                 </button>

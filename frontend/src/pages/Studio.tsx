@@ -12,6 +12,7 @@ import {
   Wand2,
 } from "lucide-react";
 import { api, bytes, clock, post } from "../lib";
+import { blobUrlFor, saveFileByPath } from "../save";
 import { useApp } from "../store";
 import type { FileItem } from "../types";
 
@@ -135,6 +136,30 @@ export default function Studio() {
   }
 
   const src = useMemo(() => (picked ? `/api/files/raw?path=${encodeURIComponent(picked.path)}` : ""), [picked]);
+  // WebView/statik modda /api/... src çalışmaz → dosyayı blob olarak çek
+  const [mediaUrl, setMediaUrl] = useState("");
+  useEffect(() => {
+    let alive = true;
+    let created = "";
+    if (!picked) {
+      setMediaUrl("");
+      return () => {};
+    }
+    blobUrlFor(picked.path)
+      .then((u) => {
+        if (!alive) {
+          URL.revokeObjectURL(u);
+          return;
+        }
+        created = u;
+        setMediaUrl(u);
+      })
+      .catch((e: Error) => toast("err", "Önizleme yüklenemedi", e.message));
+    return () => {
+      alive = false;
+      if (created) URL.revokeObjectURL(created);
+    };
+  }, [picked]);
 
   return (
     <div className="mx-auto max-w-5xl space-y-4">
@@ -186,7 +211,7 @@ export default function Studio() {
                   ) : (
                     <video
                       ref={mediaRef}
-                      src={`/api/files/raw?path=${encodeURIComponent(picked.path)}`}
+                      src={mediaUrl || src}
                       controls
                       className="h-full w-full object-contain"
                       onTimeUpdate={(e) => {
@@ -327,9 +352,20 @@ export default function Studio() {
                     <p className="truncate text-[12.5px] font-medium text-white">{result.name}</p>
                     <p className="text-[10.5px] text-zinc-500">{bytes(result.size)} · kütüphaneye eklendi</p>
                   </div>
-                  <a href={`/api/files/raw?path=${encodeURIComponent(result.path)}`} download className="btn-outline !py-1.5 !text-[11.5px]">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res = await saveFileByPath(result.path, result.name);
+                        if (res.ok) toast("ok", res.native ? "Cihaza kaydedildi" : "İndirildi", res.path);
+                        else toast("err", "Kaydedilemedi", res.message);
+                      } catch (e) {
+                        toast("err", "Kaydedilemedi", (e as Error).message);
+                      }
+                    }}
+                    className="btn-outline !py-1.5 !text-[11.5px]"
+                  >
                     İndir
-                  </a>
+                  </button>
                 </div>
               )}
             </>

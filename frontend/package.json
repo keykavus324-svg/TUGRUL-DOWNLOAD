@@ -1,7 +1,7 @@
 {
   "name": "tugrul-download-ui",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5173",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@capacitor/android": "^6.2.0",
     "@capacitor/core": "^6.2.0",
+    "@capacitor/filesystem": "^6.0.4",
     "@fontsource-variable/inter": "^5.1.0",
     "@fontsource-variable/space-grotesk": "^5.1.0",
     "lucide-react": "^0.468.0",

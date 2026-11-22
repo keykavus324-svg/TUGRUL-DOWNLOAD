@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.tugrul.download",
+  appId: "com.tugrul.studio",
   appName: "TUĞRUL DOWNLOAD",
   webDir: "dist",
   bundledWebRuntime: false,

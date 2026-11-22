@@ -1,299 +1,205 @@
+<h1 align="center">
+	<img src="fastlane/metadata/android/en-US/images/icon.png" width="25%" /> <br>
+	YTDLnis
+</h1>
+
+<div align="center">
+	English
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-sq.md">Shqip</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-az.md">Azərbaycanca</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-tr.md">Türkçe</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-id.md">Indonesia</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-pt.md">Português</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-es.md">Español</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-ja.md">Japanese</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-zh_CN.md">简体中文</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-ro.md">Română</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-ar.md">العربية</a>
+	&nbsp;&nbsp;| &nbsp;&nbsp;
+	<a href="https://github.com/deniscerri/ytdlnis/blob/main/docs/README-ru.md">Русский</a>
+</div>
+
+<h3 align="center">
+	YTDLnis is a free and open source video/audio downloader using yt-dlp for Android 7.0 and above.
+</h3>
+<h4 align="center">
+	Created by Denis Çerri
+</h4>
+
 <div align="center">
 
-<img src="docs/banner.png" alt="TUĞRUL DOWNLOAD" width="100%" />
+[![GitHub Releases](https://custom-icon-badges.herokuapp.com/badge/Download-blue?style=for-the-badge&logo=download&logoColor=white)](https://github.com/deniscerri/ytdlnis/releases/latest)
+[![F-Droid](https://custom-icon-badges.herokuapp.com/badge/FDroid-violet?style=for-the-badge&logo=download&logoColor=white)](https://f-droid.org/en/packages/com.deniscerri.ytdl)
+[![IzzyOnDroid repository](https://custom-icon-badges.herokuapp.com/badge/IzzyOnDroid%20Repo-red?style=for-the-badge&logo=download&logoColor=white)](https://apt.izzysoft.de/packages/com.deniscerri.ytdl)
+[![Uptodown](https://custom-icon-badges.herokuapp.com/badge/UpToDown-green?style=for-the-badge&logo=download&logoColor=white)](https://ytdlnis.en.uptodown.com/android/download)
 
-# TUĞRUL DOWNLOAD
+![CI](https://github.com/deniscerri/ytdlnis/actions/workflows/android.yml/badge.svg?branch=main&event=pull)
+[![Preview release](https://img.shields.io/github/release/deniscerri/ytdlnis.svg?maxAge=3600&include_prereleases&label=preview)](https://github.com/deniscerri/ytdlnis/releases) 
+[![Downloads](https://img.shields.io/github/downloads/deniscerri/ytdlnis/total?style=flat-square)](https://github.com/deniscerri/ytdlnis/releases) 
+[![Translation status](https://hosted.weblate.org/widgets/ytdlnis/-/svg-badge.svg)](https://hosted.weblate.org/engage/ytdlnis/?utm_source=widget) 
+[![community](https://img.shields.io/badge/Discord-YTDLnis-blueviolet?style=flat-square&logo=discord)](https://discord.gg/WW3KYWxAPm) 
+[![community](https://img.shields.io/badge/Telegram-YTDLnis-blue?style=flat-square&logo=telegram)](https://t.me/ytdlnis)
+[![community](https://img.shields.io/badge/Telegram-Updates-red?style=flat-square&logo=telegram)](https://t.me/ytdlnis_updates)
+[![website](https://img.shields.io/badge/Website-orange?style=flat-square&logo=youtube)](https://ytdlnis.org)
+![GitHub Sponsor](https://img.shields.io/github/sponsors/deniscerri?label=Sponsor&logo=GitHub)
 
-**yt-dlp motoruyla çalışan, AAA kalitede video & ses indirme stüdyosu.**
-Bağlantıyı bırak — çözümle, formatı seç, indir, kes, dönüştür, arşivle.
-
-`yt-dlp` · `FastAPI` · `React 18` · `TypeScript` · `Tailwind` · `FFmpeg` · `SQLite` · `Capacitor`
-
-[![Web Demo](https://img.shields.io/badge/▶_Canlı_Demo-GitHub_Pages-f7c948?style=for-the-badge)](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)
-![Pages](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/actions/workflows/pages.yml/badge.svg)
-![Sürüm](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/actions/workflows/release.yml/badge.svg)
-[![APK](https://img.shields.io/badge/⬇_Android_APK-İndir-3ddc84?style=for-the-badge&logo=android&logoColor=white)](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)
-
-**[Web demosu](https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/)** (sunucusuz motor, kurulum yok) ·
-**[Android APK](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** (yt-dlp cihazın içinde — sunucusuz) ·
-**[Tam sürüm paketi](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** (gerçek yt-dlp indirmeleri)
+### Only the links above are the only trusted sources of YTDLnis. Everything else is not related to me.
 
 </div>
 
----
+## 💡 Features
 
-> **Yayın durumu.** Statik demo `https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/`
-> adresinde yayında (kaynak: `gh-pages` dalı, HTTPS zorunlu). APK ve sunucu paketi
-> **[Releases](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)** sayfasında.
->
-> **Bağlantıyı yapıştırın, indirme başlasın.** APK'da **yt-dlp + Python + FFmpeg telefonun
-> içinde** çalışır (YTDLnis ile aynı yaklaşım: `youtubedl-android`); hiçbir sunucu gerekmez ve
-> dosya doğrudan `İndirilenler/TUGRUL DOWNLOAD` klasörüne yazılır. Statik web sürümü (Pages)
-> bağlantıyı sunucusuz **yt-dlp proxy** ucuna (`vercel-api/`) gönderir. Kuyruk, ilerleme,
-> duraklat/devam ve kalıcılık her iki tarafta da cihazda çalışır. FFmpeg stüdyosu ve toplu
-> işler için tam sürümü çalıştırın: `bash scripts/start.sh`.
+### ⬇️ Downloading
+- Download audio, video or run custom yt-dlp commands on [1000+ websites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md)
+- Share a link to the app and download straight from the bottom card, no need to open the app
+- Quick download mode to start instantly without waiting for data to load
+- Playlists and bulk downloads: edit every item separately or bulk edit type, format, path and filename template for all of them, sort by author, duration, title or date
+- Feed a `.txt` file of links, playlists or search queries and the app processes them all
+- Queue, schedule by date and time, and run multiple downloads at the same time
+- Pause / resume, re-download failed or cancelled items with swipe gestures
+- Observe sources: watch playlists and channels and automatically download new uploads, with optional sync
+- Duplicate checking, failed data fetches are saved so you can retry them later
+- Uploads to cloud providers (e.g. Nextcloud) when your download path is an external storage provider
+- Android 16 live notifications for every running download
+
+### ✂️ Editing your files
+- Cut videos by timestamps or chapters with unlimited cuts, and optionally merge the cuts into one file
+- Crop videos right from the download card
+- Split items into separate files by chapters
+- Remove or mark SponsorBlock segments as chapters
+- Embed subtitles, metadata, chapters and thumbnails, or edit the title and author
+- Burn subtitles into the video
+- Search synced or plain lyrics from [lrclib.net](https://lrclib.net), preview and adjust their timing, then embed them or save them as `.lrc`
+- Compatible mode to re-encode into widely supported formats
+- Filename templates with live preview, or simple subfolders by playlist, website or download type
+
+### 🧑‍💻 For power users
+- Full terminal with bash, where yt-dlp, Python, pip, FFmpeg and the other bundled tools are ready to use
+- Command templates with syntax highlighting that you can back up and share
+- Cookies support: log in through the built-in browser and download private or premium content
+- Generate YouTube PO tokens with the built-in BGUtils provider or inside the app's webview
+- Choose NewPipe or yt-dlp as the data fetching extractor
+- Python with curl-cffi bundled, plus JS runtimes (QuickJS, Deno, NodeJS) for website challenges
+- Custom yt-dlp sources and automatic yt-dlp updates
+- Intents for automation with apps like Tasker
+
+### 🎨 App
+- Material You design with theming options and a customizable bottom navigation
+- Incognito mode so no history or logs are saved
+- Download logs, search history and a detailed download history with different card layouts
+- Backup and restore almost everything, right from the welcome screen too
+- Files manager to clear caches and leftovers
+
+## 🧩 Plugin Support
+
+YTDLnis orchestrates plugins so users can freely upgrade and downgrade components such as:
+- Python
+- JS Runtimes (NodeJS, Deno)
+- FFmpeg
+- Aria2c
+
+You can install ytdlnis packages from this repository [ytdlnis-packages](https://github.com/deniscerri/ytdlnis-packages/) or through the updating section in the application.
+<br>For more information refer to the repo's README.
+
+## 📲 Screenshots
+
+<div>
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/01.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/02.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/03.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/04.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/05.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/06.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/07.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/08.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/09.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/10.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/11.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/12.png" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/13.png" width="90%" />
+</div>
+
+## 💬 Contact
+
+Join our [Discord](https://discord.gg/WW3KYWxAPm) or [Telegram channel](https://t.me/ytdlnis) for announcements, discussion and releases.
+
+## 😇 Contributing
+
+Please read the [contributing](CONTRIBUTING.MD) section if you would like to contribute.
+
+## 📝 Help translate on Weblate
+<a href="https://hosted.weblate.org/engage/ytdlnis/">
+<img src="https://hosted.weblate.org/widgets/ytdlnis/-/strings/open-graph.png" alt="Translation status" />
+</a>
 
 
-## Neden TUĞRUL?
+<a href="https://hosted.weblate.org/engage/ytdlnis/">
+<img src="https://hosted.weblate.org/widgets/ytdlnis/-/multi-auto.svg" alt="Translation status" />
+</a>
 
-Android'in en olgun yt-dlp uygulaması [**YTDLnis**](https://github.com/deniscerri/ytdlnis)'in
-ürün mantığından ilham alan (kuyruk, format seçimi, şablonlar, izleme listesi, sponsorblock,
-altyazı gömme, söz arama…), fakat **her cihazda** çalışan, tek komutla kurulan bir
-indirme stüdyosu. yt-dlp'nin 1000+ site desteği, FFmpeg'in medya gücü ve modern bir
-arayüzün birleşimi.
+## 🔑 Connect with third-party apps using the package name
 
-| | |
-|---|---|
-| 🌍 **1000+ site** | YouTube, Instagram, TikTok, X, Twitch, Vimeo, Reddit, SoundCloud, Dailymotion, doğrudan medya bağlantıları… |
-| 🎚️ **Tam format kontrolü** | Her video/ses akışı ayrı listelenir; çözünürlük, fps, codec, boyut, HDR bilgisiyle |
-| ⚡ **Gerçek kuyruk** | Eşzamanlı indirme, sıralama, duraklat/devam, iptal, yeniden dene, otomatik kurtarma |
-| ✂️ **Stüdyo** | Kesit, kırpma, format dönüştürme (mp4/mkv/webm/mp3/flac/wav/gif…), GIF üretimi |
-| 🎵 **Ses iş akışı** | mp3/m4a/opus/flac/wav, VBR kalite, kapak + etiket + bölüm gömme |
-| 📝 **Sözler** | [lrclib.net](https://lrclib.net) üzerinden senkron/sade söz arama, `.lrc` veya dosyaya gömme |
-| 📚 **Oynatma listeleri** | Tek tek veya toplu seçim, aralık filtresi, 500 öğeye kadar toplu kuyruk |
-| 🔎 **Keşfet** | YouTube araması, geçmiş, tek tıkla format kartı |
-| 🛡️ **SponsorBlock** | Reklam/ınro/outro bölümlerini işaretle ya da kesip çıkar |
-| 💬 **Altyazı** | Çok dilli altyazı indirme ve videoya gömme |
-| 🕵️ **Gizli mod** | Geçmiş, günlük ve arama kaydı tutulmaz |
-| 🗂️ **Yedekleme** | Ayarlar + şablonlar + izleme listesi + geçmiş tek JSON dosyada |
-| 🔐 **Çerez desteği** | Özel / yaş kısıtlı içerik için `cookies.txt` yükleme |
-| 🌐 **Proxy & hız sınırı** | Kurumsal ağlar ve bant genişliği dostu kullanım |
-| 🎨 **Arayüz** | Abanoz + altın tema, açık tema, mobil uyumlu, canlı SSE ilerlemesi |
+The app's package name is "com.deniscerri.ytdl".
 
----
+## 🔍 Verify application signature
 
-## Hızlı başlangıç
-
-### Tek komut (önerilen)
-
-```bash
-git clone <bu-repo> tugrul-download && cd tugrul-download
-bash scripts/start.sh
-# → http://localhost:8000
+The app should contain the signature below. The github workflow action uses it, and the releases are based on it to make it a reproducible build.
+If the signature is different, your third party distributor has modified the application. Please use the app with the original signature.
+```
+Signer #1 certificate DN: CN=Denis Cerri, OU=Personal, O=Personal, L=Albania, ST=Albania, C=AL
+Signer #1 certificate SHA-256 digest: 263645cb5272eb290759fe1f59149ae24df6ce171e9f6666eead981d3fc64c95
+Signer #1 certificate SHA-1 digest: 2fec9c2fcef68d29a60857e185c795fec5f56fb6
+Signer #1 certificate MD5 digest: 429d0c6315d2f99650f66cc44cf5a794
 ```
 
-`start.sh` eksik Python/Node bağımlılıklarını kurar, arayüzü derler ve sunucuyu başlatır.
 
-### Android APK
+## 🤖 Connect with third-party apps using intents
 
-```bash
-export ANDROID_HOME=$HOME/Android/Sdk
-bash scripts/build-apk.sh            # → dist-apk/tugrul-download-1.0.3-debug.apk
-```
+You can use intents to push commands to the app to run downloads without user interaction.
+Accepted variables:
 
-Hazır APK: **[Releases](https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/releases/latest)**.
-Ayrıntılar ve iki çalışma modu: [docs/ANDROID.md](docs/ANDROID.md).
+<b>TYPE</b> -> it can be: audio,video,command <br/>
+<b>BACKGROUND</b> -> it can be: true,false. If its true the app won't show the download card no matter what and run the download in the background <br/>
 
-### Statik yayın (GitHub Pages)
+### An example of downloading an audio item in the background with Tasker
+1. Create Send Intent task
+2. Action: android.intent.action.SEND
+3. Cat: Default
+4. Mime Type: text/*
+5. Extra: android.intent.extra.TEXT:url (instead of "url" write the URL of the video you want to download)
+6. Extra: TYPE:audio
+7. Extra: BACKGROUND:true
 
-`main` dalına her push'ta `.github/workflows/pages.yml` arayüzü `--mode ghpages`
-ile derler, **gerçek indirme akışını test eder** ve Pages'e yayınlar:
-<https://keykavus324-svg.github.io/TUGRUL-DOWNLOAD/>
+## 📄 License
 
-```bash
-# yerelde aynı çıktıyı görmek için
-npm --prefix frontend run build:ghpages && npx --prefix frontend vite preview --mode ghpages
-```
+[GNU GPL v3.0](https://github.com/deniscerri/ytdlnis/blob/main/LICENSE)
 
-### Docker
+Except for the source code licensed under the GPLv3 license, all other parties are prohibited from using the "YTDLnis" name as a downloader app, and the same is true for its derivatives. Derivatives include but are not limited to forks and unofficial builds.
 
-```bash
-docker build -t tugrul-download .
-docker run --rm -p 8000:8000 -v "$PWD/downloads:/app/downloads" tugrul-download
-```
+## 😁 Donate
 
-### Geliştirme modu
 
-```bash
-npm run setup     # node + pip bağımlılıkları
-npm run dev       # API :8000 + derlenmiş arayüz
-# veya canlı yenileme için iki terminal:
-PYTHONPATH=backend python3 -m tugrul.main       # API :8000
-npm --prefix frontend run dev                   # Vite :5173 (proxy'li)
-```
+[<img src="https://raw.githubusercontent.com/WSTxda/WSTxda/main/images/BMC.svg"
+alt='Donate with BMC'
+height="80">](https://www.buymeacoffee.com/deniscerri)
 
-### Gereksinimler
+## 🙏 Thanks
 
-* Python **3.10+** (3.11/3.12 önerilir)
-* Node **18+** (yalnızca arayüz derlemek için)
-* FFmpeg — **otomatik**: `imageio-ffmpeg` ile gelir. İsterseniz `FFMPEG_PATH=/usr/bin/ffmpeg` verin.
+- [decipher3114](https://github.com/decipher3114) for the app's icon
+- [dvd](https://github.com/yausername/dvd) for being an example youtubedl-android implementation
+- [seal](https://github.com/JunkFood02/Seal) for certain design elements and features I wanted to have in this app when I started developing it
+- [youtubedl-android](https://github.com/yausername/youtubedl-android) for porting yt-dlp to Android
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) and its contributors for making this tool possible. Without it this app wouldn't exist
 
----
 
-## Mimari
-
-```
-┌─────────────────────────────┐        SSE /api/events        ┌──────────────────────────┐
-│  React + TS arayüz (Vite)   │ ◀───────────────────────────▶ │  FastAPI (backend/tugrul)│
-│  HashRouter · Tailwind      │        REST /api/*            │  api.py     REST + SSE   │
-│  store.tsx (canlı durum)    │                               │  manager.py kuyruk motoru│
-└─────────────────────────────┘                               │  media.py   yt-dlp köprü │
-                                                              │  tools.py   FFmpeg araç  │
-                                                              │  demo.py    demo üretici │
-                                                              │  db.py      SQLite       │
-                                                              └────────────┬─────────────┘
-                                                                           │
-                                                      ┌────────────────────┴────────────────┐
-                                                      │ yt-dlp · FFmpeg · downloads/ · data/ │
-                                                      └─────────────────────────────────────┘
-```
-
-* **Kuyruk motoru** (`manager.py`): N eşzamanlı worker, iş parçacığında çalışan yt-dlp,
-  ilerleme kancaları → SQLite → SSE. Duraklatma, yt-dlp'nin `DownloadCancelled`
-  mekanizmasıyla `.part` dosyasını koruyarak yapılır; devam ettirme kaldığı yerden sürer.
-* **Kalıcılık**: tek dosya SQLite (`data/tugrul.db`, WAL). Sunucu yeniden başlarsa
-  yarım kalan işler otomatik kuyruğa döner.
-* **Arayüz**: `EventSource` ile canlı ilerleme; sayfa yenilemeye gerek yok.
-
-Ayrıntılar: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [API](docs/API.md) · [Android](docs/ANDROID.md)
-
----
-
-## Özellik turu
-
-### 1. İndir
-Bağlantıyı yapıştır → video/ses sekmelerinde akışları gör → indir. Kapak, süre,
-yükleyen, izlenme, bölüm listesi ve altyazı dilleri otomatik gelir. Üstteki
-**hızlı indirme çubuğu** her sayfadan tek satırla indirme başlatır.
-
-### 2. Keşfet
-YouTube araması; sonuç kartına dokununca format kartı açılır.
-
-### 3. Kütüphane
-İndirme geçmişi (tarihe göre gruplu, arama + filtre) ve **Dosyalar** görünümü:
-boyut, tarih, oynat/indir/stüdyoda aç/sil.
-
-### 4. Kuyruk
-Aktif / sırada / duraklatılan / biten işler; tümünü duraklat-devam, toplu temizleme.
-
-### 5. Stüdyo
-Kesit (yeniden kodlamalı ya da kayıpsız), kırpma, format dönüştürme, GIF, söz
-arama + gömme. Tüm işlemler sunucudaki FFmpeg ile yapılır, çıktı kütüphaneye düşer.
-
-### 6. Zamanla · İzle · Şablonlar
-Tarih/saat bazlı indirme; kanal/liste izleme; tekrar kullanılabilir yt-dlp argüman
-şablonları (6 hazır şablonla birlikte).
-
-### 7. İstatistik
-7 günlük grafik, video/ses dağılımı, başarı oranı, disk kullanımı, sistem günlüğü.
-
-### 8. Ayarlar
-Klasör, eşzamanlılık, parça sayısı, yeniden deneme, dosya adı şablonu, gömme
-seçenekleri, altyazı dilleri, SponsorBlock, hız sınırı, proxy, çerez, tema,
-yedek al/geri yükle.
-
----
-
-## İndirme motoru (Pages / APK)
-
-**APK'da motor cihazın içindedir.** `frontend/android/.../YtdlpPlugin.java`, `youtubedl-android`
-üzerinden yt-dlp + Python + FFmpeg'i telefonda çalıştırır (YTDLnis'in kullandığı kütüphane):
-
-```
-Ytdlp.init()                 Python/yt-dlp/FFmpeg'i hazırlar (ilk açılışta birkaç saniye)
-Ytdlp.info(url)              --dump-single-json → başlık, süre, formatlar
-Ytdlp.download({url, type})  indirme; ilerleme "progress" olayıyla arayüze akar
-Ytdlp.cancel(id)             çalışan süreci durdurur
-```
-
-Dosya `Download/TUGRUL DOWNLOAD` içine yazılır; sunucu, proxy veya bulut ucu gerekmez.
-Doğrulama: `node frontend/native-download-test.mjs` (dış ağ tamamen kapalıyken
-yapıştır → indir → dosya cihazda).
-
-Statik web sürümünde (Pages) ise iki katman birlikte çalışır:
-
-* **Cihaz katmanı** — `frontend/src/offline.ts`, `/api/*` çağrılarını yakalayan bir
-  _sanal sunucudur_: kuyruk, ilerleme, duraklat/devam, kalıcılık (IndexedDB), ayarlar,
-  şablonlar, zamanlama, izleme listesi ve yedekleme tarayıcıda/WebView'da çalışır.
-* **Motor katmanı** — `frontend/src/proxy.ts`, gerçek indirmeyi sunucusuz yt-dlp
-  ucundan yapar:
-
-  ```
-  POST /api/info     bağlantıyı çözer (başlık, süre, formatlar)
-  POST /api/resolve  seçilen akış için imzalı doğrudan adres üretir
-  GET  /api/stream   imzalı adresten bayt aralığı (parça parça, ~1.5 MB)
-  GET  /api/health   motor durumu     GET /api/probe  tek istekte uçtan uca test
-  ```
-
-  Dosya tarayıcıda birleştirilip Blob olarak kaydedilir. Belirteçler HMAC ile
-  imzalıdır ve hedef adres izin listesiyle sınırlıdır — uç açık bir proxy değildir.
-
-Ortak uç: `https://tugrul-run-tugrul1.vercel.app/api/index` (Ayarlar → **İndirme motoru**
-alanından değiştirilebilir). Kendi ucunuzu yayınlayın:
-
-```bash
-cd vercel-api && vercel deploy --prod          # ya da vercel-api/ klasörünü Vercel'e taşıyın
-# çerez gerektiren siteler için:  vercel env add YTDLP_COOKIES_B64
-```
-
-> **Vercel notu.** Proje ayarlarındaki _Deployment Protection_ açıkken `*.vercel.app`
-> adresleri Vercel girişi ister ve uygulama motora ulaşamaz. **Project Settings →
-> Deployment Protection → "Only Preview Deployments"** yapın. Doğrulama:
-> `https://<projeniz>.vercel.app/api/index/api/probe?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ`
-
-APK'da **Ayarlar → Yerel sunucu** alanına `http://<bilgisayar-ip>:8000` yazarsanız
-telefon, kendi ağınızdaki tam sürüme bağlanır; boş bırakırsanız (önerilen) indirmeler
-cihazın içindeki motorla yürür.
-
-## Demo modu (ağ kısıtlı ortamlar)
-
-`demo://demo001` … `demo://demo004` bağlantıları, **gerçek** medya üretir (FFmpeg ile
-video/ses dosyası) ve indirme hattının tamamını (kuyruk → ilerleme → tamamlanma →
-dosya oynatma → stüdyo işlemleri) internete çıkmadan çalıştırır. Kısıtlı ağlarda
-arayüzü ve iş akışını doğrulamak için birebir aynı kod yolu kullanılır.
-
----
-
-## API
-
-Tüm uçlar `docs/API.md` içinde örnekleriyle listelidir. Kısa özet:
-
-```bash
-curl -s localhost:8000/api/health
-curl -s -X POST localhost:8000/api/info -H 'content-type: application/json' \
-     -d '{"url":"https://www.youtube.com/watch?v=..."}'
-curl -s -X POST localhost:8000/api/downloads -H 'content-type: application/json' \
-     -d '{"url":"https://...","dl_type":"audio","format_id":"mp3"}'
-curl -N localhost:8000/api/events          # canlı olay akışı (SSE)
-```
-
----
-
-## Test
-
-```bash
-pip install pytest
-PYTHONPATH=backend python3 -m pytest backend/tests -q
-```
-
-Kapsam: sağlık, format ayrıştırma, hata eşleme, indirme yaşam döngüsü (gerçek dosya
-üretimi + dosya servisi), ayar turu, şablon/zamanlama/izleme CRUD, yedek-geri yükleme,
-yol güvenliği (path traversal) ve demo medya üretimi.
-
----
-
-## Güvenlik notları
-
-* Dosya erişimleri indirme klasörüyle sınırlıdır (`/api/files`, `/api/files/raw`).
-* Serbest yt-dlp argümanları yalnızca **beyaz listedeki** bayraklara çevrilir;
-  `--exec`, `--paths` gibi tehlikeli seçenekler kabul edilmez.
-* Çerez dosyası yalnızca yerelde saklanır, dışarıya gönderilmez.
-* İnternete açık dağıtım yapacaksanız ters proxy arkasına alın ve kimlik doğrulama ekleyin.
-
----
-
-## Yasal
-
-Bu araç yalnızca **hak sahibi olduğunuz veya indirmeye izniniz olan** içerikler için
-kullanılmalıdır. İçerik sağlayıcıların kullanım koşullarına ve bulunduğunuz ülkenin
-telif yasalarına uymak kullanıcının sorumluluğundadır.
-
-## Teşekkür
-
-* [yt-dlp](https://github.com/yt-dlp/yt-dlp) — indirme motoru
-* [YTDLnis](https://github.com/deniscerri/ytdlnis) — ürün fikri ve özellik ilhamı (GPL-3.0)
-* [FFmpeg](https://ffmpeg.org), [FastAPI](https://fastapi.tiangolo.com), [React](https://react.dev), [Tailwind CSS](https://tailwindcss.com), [lrclib](https://lrclib.net)
-
-## Lisans
-
-[GPL-3.0-or-later](LICENSE) — YTDLnis ile aynı lisans ailesi. Ayrıntı ve atıflar: [NOTICE.md](NOTICE.md).
+and to a lot of other people, such as contributors.

@@ -1,0 +1,31 @@
+name: Android debug APK
+
+on:
+  push:
+    branches:
+      - 'arena/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Build debug APKs
+        run: ./gradlew assembleGithubDebug --no-daemon
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tugrul-download-debug
+          path: app/build/outputs/apk/github/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14

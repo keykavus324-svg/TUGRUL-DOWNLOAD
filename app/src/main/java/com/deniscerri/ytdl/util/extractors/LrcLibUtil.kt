@@ -45,7 +45,7 @@ object LrcLibUtil {
             val conn = url.openConnection() as HttpURLConnection
             var delayMs = backoffMs(attempt)
             try {
-                conn.setRequestProperty("User-Agent", "YTDLnis (https://github.com/deniscerri/ytdlnis)")
+                conn.setRequestProperty("User-Agent", "TUGRUL DOWNLOAD (https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD)")
                 conn.setRequestProperty("Lrclib-App-Id", APPLICATION_ID)
                 conn.connectTimeout = 8000
                 conn.readTimeout = 10000

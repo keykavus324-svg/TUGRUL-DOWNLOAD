@@ -25,7 +25,7 @@
         android:layout_gravity="center"
         android:ellipsize="end"
         android:maxLines="1"
-        tools:text="YTDLnis"
+        tools:text="TUĞRUL DOWNLOAD"
         android:textSize="11sp" />
 
 </LinearLayout>

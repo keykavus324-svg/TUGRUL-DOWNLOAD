@@ -114,7 +114,7 @@ class TerminalSessionService : Service() {
         )
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("TUGRUL DOWNLOAD Terminal")
+            .setContentTitle("TUĞRUL DOWNLOAD Terminal")
             .setContentText(getNotificationContentText())
             .setSmallIcon(R.drawable.ic_terminal)
             .setContentIntent(pendingIntent)

@@ -63,25 +63,9 @@
             app:icon="@drawable/baseline_exit_to_app_24"
             app:key="package_name"
             app:title="@string/package_name" />
-        <Preference
-            app:icon="@drawable/ic_discord"
-            app:key="discord"
-            app:summary="https://discord.gg/WW3KYWxAPm"
-            app:title="Discord">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://discord.gg/WW3KYWxAPm" />
-        </Preference>
 
-        <Preference
-            app:icon="@drawable/ic_telegram"
-            app:key="telegram"
-            app:summary="https://t.me/ytdlnis"
-            app:title="Telegram">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://t.me/ytdlnis" />
-        </Preference>
+
+
 
         <Preference
             app:icon="@drawable/ic_translate"
@@ -89,15 +73,7 @@
             app:summary="@string/translators_summary"
             app:title="@string/translators" />
 
-        <Preference
-            app:icon="@drawable/baseline_security_24"
-            app:key="security"
-            app:summary="🔐 YTDLnis - Privacy Policy"
-            app:title="@string/security">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="https://github.com/deniscerri/ytdlnis/blob/main/SECURITY.md" />
-        </Preference>
+
 
         <Preference
             app:icon="@drawable/ic_license"
@@ -106,18 +82,28 @@
             app:title="@string/license">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/deniscerri/ytdlnis/blob/main/LICENSE" />
+                android:data="https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD/blob/main/LICENSE" />
+        </Preference>
+
+        <Preference
+            app:icon="@drawable/ic_code"
+            app:key="upstream_source"
+            app:title="@string/upstream_project"
+            app:summary="YTDLnis · Denis Çerri">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/deniscerri/ytdlnis" />
         </Preference>
 
         <Preference
             app:icon="@drawable/ic_code"
             app:key="rreth"
-            app:summary="https://github.com/deniscerri/ytdlnis"
+            app:summary="https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD"
             app:allowDividerBelow="true"
             app:title="@string/source_code">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="https://github.com/deniscerri/ytdlnis" />
+                android:data="https://github.com/keykavus324-svg/TUGRUL-DOWNLOAD" />
         </Preference>
 
 

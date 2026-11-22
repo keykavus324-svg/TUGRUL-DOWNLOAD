@@ -34,8 +34,8 @@ class WelcomeUpdatesFragment : Fragment(R.layout.fragment_welcome_updates) {
         bindSwitch(appRow, R.drawable.ic_update_app, R.string.update_app, R.string.update_app_summary, viewModel.updateApp) {
             viewModel.updateApp = it
         }
-        // app updates are only offered by the GitHub build
-        appRow.isVisible = BuildConfig.FLAVOR == "github"
+        // Application update checks are disabled until this fork has a verified update channel.
+        appRow.isVisible = false
         view.findViewById<View>(R.id.update_app_header).isVisible = appRow.isVisible
 
         bindSwitch(view.findViewById(R.id.update_ytdl), R.drawable.ic_update, R.string.auto_update_ytdlp, R.string.auto_update_ytdlp_summary, viewModel.autoUpdateYtdlp) {
@@ -86,11 +86,9 @@ class WelcomeUpdatesFragment : Fragment(R.layout.fragment_welcome_updates) {
     private fun setupBackgroundTypes(row: View) {
         var titles = resources.getStringArray(R.array.background_update_check_types)
         var values = resources.getStringArray(R.array.background_update_check_types_values)
-        // app updates are only offered by the GitHub build
-        if (BuildConfig.FLAVOR != "github") {
-            titles = titles.drop(1).toTypedArray()
-            values = values.drop(1).toTypedArray()
-        }
+        // Application update checks are disabled until this fork has a verified update channel.
+        titles = titles.drop(1).toTypedArray()
+        values = values.drop(1).toTypedArray()
         val summary = row.findViewById<TextView>(R.id.preference_summary)
         fun updateSummary() {
             summary.text = values.indices.filter { viewModel.backgroundUpdateTypes.contains(values[it]) }
